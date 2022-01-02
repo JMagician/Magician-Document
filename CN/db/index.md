@@ -10,7 +10,7 @@ Magician-JDBC，跟Magician-Web组件不一样，他不需要依赖Magician，�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-JDBC</artifactId>
-    <version>2.0</version>
+    <version>2.0.1</version>
 </dependency>
 
 <!-- mysql driver package -->
@@ -66,8 +66,10 @@ int result = JDBCTemplate.get().insert("表名", paramPO);
 
 ```java
 // 构建修改条件
-List<Condition> conditionList = new ArrayList<>();
-conditionList.add(Condition.get("id = ?", 4));
+List<Condition> conditionList = ConditionBuilder.createCondition()
+        .add("id = ?", 10)
+        .add("and name = ?", "bee"))
+        .build();
 
 // 构建修改数据
 ParamPO paramPO = new ParamPO();
@@ -82,8 +84,9 @@ int result = JDBCTemplate.get().update("表名", paramPO, conditionList);
 
 ```java
 // 构建删除条件
-List<Condition> conditionList = new ArrayList<>();
-conditionList.add(Condition.get("id = ?", 42));
+List<Condition> conditionList = ConditionBuilder.createCondition()
+        .add("id = ?", 10)
+        .build();
 
 // 执行删除
 int result = JDBCTemplate.get().delete("表名", conditionList);
@@ -93,10 +96,11 @@ int result = JDBCTemplate.get().delete("表名", conditionList);
 
 ```java
 // 构建查询条件
-List<Condition> conditionList = new ArrayList<>();
-conditionList.add(Condition.get("id > ?", 10));
-conditionList.add(Condition.get("and user_name != ?", "a"));
-conditionList.add(Condition.get("order by create_time desc", Condition.NOT_WHERE));
+List<Condition> conditionList = ConditionBuilder.createCondition()
+            .add("id > ?", 10)
+            .add("and (name = ? or age > ?)", "bee", 10))
+            .add("order by create_time", Condition.NOT_WHERE))
+            .build();
 
 // 执行查询
 List<ParamPO> result = JDBCTemplate.get().select("xt_message_board", conditionList, ParamPO.class);
@@ -111,7 +115,7 @@ public class Condition {
     // 条件，可以是 where， order by， group by 等任意条件
     private String key;
     // 如果条件设置的是where条件，那么这个属性就需要设置成 条件的值
-    private Object val;
+    private Object[] val;
 
     // 如果条件不是where，那么val就必须设置成这个常量
     public static final String NOT_WHERE = "notWhere";
@@ -121,16 +125,14 @@ public class Condition {
 可以看如下示例
 
 ```java
-List<Condition> conditionList = new ArrayList<>();
-
-// 这里key 设置成了where条件，所以val 就设置成了 where的值，也就是查询 id > 10 的数据
-conditionList.add(Condition.get("id > ?", 10));
-
-// 这里也一样的，是where条件，但是因为他是第二个条件，所以需要 在最前面加上and，or 等连接符
-conditionList.add(Condition.get("and user_name != ?", "a"));
-
-// 这是排序，所以 val需要设置成 Condition.NOT_WHERE
-conditionList.add(Condition.get("order by create_time desc", Condition.NOT_WHERE));
+List<Condition> conditionList = ConditionBuilder.createCondition()
+            // 这里key 设置成了where条件，所以val 就设置成了 where的值，也就是查询 id > 10 的数据
+            .add("id > ?", 10)
+            // 这里也一样的，是where条件，但是因为他是第二个条件，所以需要 在最前面加上and，or 等连接符
+            .add("and (name = ? or age > ?)", "bee", 10))
+            // 这是排序，所以 val需要设置成 Condition.NOT_WHERE
+            .add("order by create_time", Condition.NOT_WHERE))
+            .build();
 ```
 
 注：条件构造器只支持 ? 占位符

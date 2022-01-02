@@ -8,7 +8,7 @@
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician</artifactId>
-    <version>2.0</version>
+    <version>2.0.1</version>
 </dependency>
 
 <!-- 这是日志包，必须有，不然控制台看不到东西，支持任意可以看slf4j桥接的日志包 -->
@@ -75,7 +75,7 @@ Magician.createHttp()
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web</artifactId>
-    <version>2.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
@@ -178,7 +178,7 @@ public class ParamVO {
 
 ```java
 // 不可为空，且长度在2-3位
-@Verification(notNull = true,maxLength = 3L,minLength = 2L, msg = "id不可为空且长度必须在2-3位之间")
+@Verification(notNull = true, max = "100", min = "10", msg = "id不可为空且大小必须在10-100位之间")
 private Integer id;
 
 // 正则校验
@@ -189,10 +189,10 @@ private String password;
 #### 属性解释
 
 - notNull：是否为空，设置为true说明不可为空
-- maxLength：最大长度，只有设置了notNull=true 才生效
-- minLength：最小长度，只有设置了notNull=true 才生效
+- max：最大值，只对int，double，float，BigDecimal等数字类型有效
+- min：最小长值，只对int，double，float，BigDecimal等数字类型有效
 - msg：校验不通过的时候，返回前端的提示文字
-- reg：正则表达式
+- reg：正则表达式，只对String类型有效
 
 ### 创建拦截器
 
