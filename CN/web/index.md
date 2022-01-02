@@ -190,7 +190,7 @@ private String password;
 
 - notNull：是否为空，设置为true说明不可为空
 - max：最大值，只对int，double，float，BigDecimal等数字类型有效
-- min：最小长值，只对int，double，float，BigDecimal等数字类型有效
+- min：最小值，只对int，double，float，BigDecimal等数字类型有效
 - msg：校验不通过的时候，返回前端的提示文字
 - reg：正则表达式，只对String类型有效
 
