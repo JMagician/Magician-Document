@@ -8,7 +8,7 @@
     
     <meta name="description" content="基于Netty开发的Web解决方案">
     
-    <link rel="preload" href="/cn/assets/css/0.styles.e8732725.css" as="style"><link rel="preload" href="/cn/assets/js/app.6f11562b.js" as="script"><link rel="preload" href="/cn/assets/js/2.00457cd0.js" as="script"><link rel="preload" href="/cn/assets/js/10.cecb6f46.js" as="script"><link rel="prefetch" href="/cn/assets/js/3.22fc3141.js"><link rel="prefetch" href="/cn/assets/js/4.6726f7ba.js"><link rel="prefetch" href="/cn/assets/js/5.30bbc59b.js"><link rel="prefetch" href="/cn/assets/js/6.48e2ef9e.js"><link rel="prefetch" href="/cn/assets/js/7.8b3b0860.js"><link rel="prefetch" href="/cn/assets/js/8.cdd0dc7c.js"><link rel="prefetch" href="/cn/assets/js/9.37f7ea5f.js">
+    <link rel="preload" href="/cn/assets/css/0.styles.e8732725.css" as="style"><link rel="preload" href="/cn/assets/js/app.ff79da11.js" as="script"><link rel="preload" href="/cn/assets/js/2.00457cd0.js" as="script"><link rel="preload" href="/cn/assets/js/10.bfa29fe2.js" as="script"><link rel="prefetch" href="/cn/assets/js/3.22fc3141.js"><link rel="prefetch" href="/cn/assets/js/4.6726f7ba.js"><link rel="prefetch" href="/cn/assets/js/5.30bbc59b.js"><link rel="prefetch" href="/cn/assets/js/6.48e2ef9e.js"><link rel="prefetch" href="/cn/assets/js/7.f2d4f6ea.js"><link rel="prefetch" href="/cn/assets/js/8.cdd0dc7c.js"><link rel="prefetch" href="/cn/assets/js/9.b0352f20.js">
     <link rel="stylesheet" href="/cn/assets/css/0.styles.e8732725.css">
   </head>
   <body>
@@ -66,7 +66,7 @@
     <span class="token annotation punctuation">@Override</span>
     <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token class-name">MagicianRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">MagicianResponse</span> response<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token comment">// response data</span>
-        magicianRequest<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        request<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
                 <span class="token punctuation">.</span><span class="token function">sendJson</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> <span class="token string">&quot;{'status':'ok'}&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
@@ -238,6 +238,6 @@ request<span class="token punctuation">.</span><span class="token function">getJ
 </code></pre></div><p>创建token</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">String</span> token <span class="token operator">=</span> jwtManager<span class="token punctuation">.</span><span class="token function">createToken</span><span class="token punctuation">(</span>要存入的对象<span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre></div><p>还原token</p> <div class="language-java extra-class"><pre class="language-java"><code>原对象类 原对象 <span class="token operator">=</span> jwtManager<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token string">&quot;token字符串&quot;</span><span class="token punctuation">,</span> 原对象类<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre></div><h2 id="数据库操作"><a href="#数据库操作" class="header-anchor">#</a> 数据库操作</h2> <p><a href="/cn/db/">点击此处 -&gt; 跳转到数据库操作</a></p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
-    <script src="/cn/assets/js/app.6f11562b.js" defer></script><script src="/cn/assets/js/2.00457cd0.js" defer></script><script src="/cn/assets/js/10.cecb6f46.js" defer></script>
+    <script src="/cn/assets/js/app.ff79da11.js" defer></script><script src="/cn/assets/js/2.00457cd0.js" defer></script><script src="/cn/assets/js/10.bfa29fe2.js" defer></script>
   </body>
 </html>

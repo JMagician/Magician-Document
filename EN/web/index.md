@@ -34,7 +34,7 @@ public class DemoHandler implements HttpBaseHandler {
     @Override
     public void request(MagicianRequest request, MagicianResponse response) {
         // response data
-        magicianRequest.getResponse()
+        request.getResponse()
                 .sendJson(200, "{'status':'ok'}");
     }
 }
