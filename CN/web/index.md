@@ -2,6 +2,12 @@
 
 ## Magician
 
+### 运行环境
+
+JDK11+
+
+Maven中央库的Jar包 最低支持JDK11，但是源码最低支持JDK8，如果你需要在JDK8上运行，可以下载最新的tag 自己编译
+
 ### 引入依赖
 
 ```xml
@@ -11,7 +17,7 @@
     <version>2.0.2</version>
 </dependency>
 
-<!-- 这是日志包，必须有，不然控制台看不到东西，支持任意可以看slf4j桥接的日志包 -->
+<!-- 这是日志包，必须有，不然控制台看不到东西，支持任意可以和slf4j桥接的日志包 -->
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-jdk14</artifactId>
@@ -19,14 +25,14 @@
 </dependency>
 ```
 
-### 创建Handler
+### 创建Handler(HTTP服务)
 
 ```java
 @HttpHandler(path="/demo")
 public class DemoHandler implements HttpBaseHandler {
 
     @Override
-    public void request(MagicianRequest magicianRequest, MagicianResponse response) {
+    public void request(MagicianRequest request, MagicianResponse response) {
         // response data
         magicianRequest.getResponse()
                 .sendJson(200, "{'status':'ok'}");
@@ -34,30 +40,75 @@ public class DemoHandler implements HttpBaseHandler {
 }
 ```
 
-### 创建WebSocketHandler
+### 接收参数
+
+```java
+// 根据参数名称 获取一个参数
+request.getParam("param name");
+
+// 获取参数名称相同的多个参数
+request.getParams("param name");
+
+// 根据参数名称 获取文件
+request.getFile("param name");
+
+// 获取参数名称相同的多个文件
+request.getFiles("param name");
+
+// 获取本次请求传输的所有文件，key为 参数名称
+request.getFileMap();
+
+// 如果本次请求时json传参，可以用这个方法获取json字符串
+request.getJsonParam();
+
+// 根据名称 获取请求头
+request.getRequestHeader("header name");
+
+// 获取所有请求头
+request.getRequestHeaders();
+```
+
+### 创建WebSocketHandler(WebSocket服务)
 
 ```java
 @WebSocketHandler(path = "/websocket")
 public class DemoSocketHandler implements WebSocketBaseHandler {
    
+    /**
+     * 当连接进来时，触发这个方法
+     */
     @Override
     public void onOpen(WebSocketSession webSocketSession) {
      
     }
-   
+    
+    /**
+     * 当连接断开时，触发这个方法
+     */
     @Override
     public void onClose(WebSocketSession webSocketSession) {
         
     }
 
+    /**
+     * 当客户端发来消息时，触发这个方法
+     */
     @Override
     public void onMessage(String message, WebSocketSession webSocketSession) {
-
+        // 第一个参数 message 就是客户端发送过来的消息
     }
 }
 ```
 
+### 发送消息
+
+```java
+webSocketSession.sendString("send message");
+```
+
 ### 启动服务
+
+无论是HTTP服务 还是WebSocket服务，都是这么启动
 
 ```java
 Magician.createHttp()
@@ -111,6 +162,8 @@ public class DemoController {
 	}
 
 	// 也可以使用传统的方式接收参数，调用request里面的方法获取参数
+    // 这里的接收方式，可以往上翻，看标题《接收参数》
+    // 这种方式可以跟 上面提到的 实体类接收参数 混用
 	@Route(value = "/demob", requestMethod = ReqMethod.POST)
 	public String demob(MagicianRequest request){
         request.getParam("name");
@@ -130,6 +183,9 @@ public class DemoController {
 
 ### 修改扫描范围
 
+- 扫描范围 需要包含【handler，controller，拦截器 所在的包名】
+- 多个可以逗号分割，也可以直接配置成 他们的父包名
+
 ```java
 Magician.createHttp()
                     .scan("handler，controller，拦截器 所在的包名")
@@ -137,6 +193,8 @@ Magician.createHttp()
 ```
 
 ### 传统方式接收参数
+
+这里只是简单的列举一下，具体的可以看上面的标题《接收参数》
 
 ```java
 // 获取 表单 以及 formData 提交的参数
@@ -177,8 +235,8 @@ public class ParamVO {
 在字段上 加上注解即可
 
 ```java
-// 不可为空，且长度在2-3位
-@Verification(notNull = true, max = "100", min = "10", msg = "id不可为空且大小必须在10-100位之间")
+// 不可为空，且大小在10-100之间
+@Verification(notNull = true, max = "100", min = "10", msg = "id不可为空且大小必须在10-100之间")
 private Integer id;
 
 // 正则校验
@@ -188,7 +246,7 @@ private String password;
 
 #### 属性解释
 
-- notNull：是否为空，设置为true说明不可为空
+- notNull：是否为空，设置为true说明不可为空，对基本类型无效（不能赋值为null的类型都无效）
 - max：最大值，只对int，double，float，BigDecimal等数字类型有效
 - min：最小值，只对int，double，float，BigDecimal等数字类型有效
 - msg：校验不通过的时候，返回前端的提示文字
@@ -233,7 +291,7 @@ public class DemoInter implements MagicianInterceptor {
 
 ### JWT管理
 
-创建一个jwt管理对象， 每次builder都是一个新的对象，所以最好写一个静态的工具类来管理
+创建一个jwt管理对象， 每次builder都是一个新的对象，所以务必写一个静态的工具类来管理
 
 ```java
 JwtManager jwtManager = JwtManager
