@@ -38,6 +38,6 @@ sidebar: 'false'
     <tr style="border:0px; background-color:#ffffff">
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">微信公众号：Beerus开源网</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">QQ群：773291321</p></td>
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px">电报：<a href="https://t.me/beeruscc">https://t.me/beeruscc</a></p></td>
+        <td style="border:0px;text-align:center" valign="top"><p style="width:150px">电报：<a href="https://t.me/magicianio">https://t.me/magicianio</a></p></td>
     </tr>
 </table>

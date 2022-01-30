@@ -38,6 +38,6 @@ In addition to direct support, you can also indirectly support Oh, follow my WeC
     <tr style="border:0px; background-color:#ffffff">
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">WeChat Public: Beerus开源网</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">QQGroup: 773291321</p></td>
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px">Telegram: <a href="https://t.me/beeruscc">https://t.me/beeruscc</a></p></td>
+        <td style="border:0px;text-align:center" valign="top"><p style="width:150px">Telegram: <a href="https://t.me/magicianio">https://t.me/magicianio</a></p></td>
     </tr>
 </table>

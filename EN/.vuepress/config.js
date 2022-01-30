@@ -7,7 +7,6 @@ module.exports = {
         { text: 'Home', link: '/' },
         { text: 'Github', link: 'https://github.com/JMagician' },              
         { text: 'Discussions', link: 'https://github.com/JMagician/Magician/discussions' },
-        { text: 'Sponsor', link: '/sponsor/sponsor.md' }, 
         {
           text: 'Document',
           items: [
@@ -15,6 +14,8 @@ module.exports = {
             { text: 'Magician-JDBC', link: '/db/index.md' }
           ]
         },
+        { text: 'Sponsor', link: '/sponsor/sponsor.md' }, 
+        { text: 'Telegram', link: 'https://t.me/magicianio'},
         {
           text: 'Languages',
           items: [

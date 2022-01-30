@@ -7,7 +7,6 @@ module.exports = {
           { text: '首页', link: '/' },
           { text: 'Github', link: 'https://github.com/JMagician' },              
           { text: '社区', link: 'https://github.com/JMagician/Magician/discussions' },
-          { text: '赞助', link: '/sponsor/sponsor.md' }, 
           {
             text: '文档',
             items: [
@@ -15,6 +14,8 @@ module.exports = {
               { text: 'Magician-JDBC', link: '/db/index.md' }
             ]
           },
+          { text: '赞助', link: '/sponsor/sponsor.md' }, 
+          { text: 'Telegram', link: 'https://t.me/magicianio'},
           {
             text: '语言',
             items: [
