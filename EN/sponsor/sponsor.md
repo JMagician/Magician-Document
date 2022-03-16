@@ -12,14 +12,14 @@ If you like the project and would like to help, then buy the author a cup of cof
     <tr style="border:0px">
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/wx.webp" width="200px"/></td>
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/alipay.webp" width="200px"/></td>
-        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/eth.webp" width="200px"/></td>
-        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/btc.webp" width="200px"/></td>
+        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/eth.png" width="200px"/></td>
+        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/usdt.png" width="200px"/></td>
     </tr>
     <tr style="border:0px; background-color:#ffffff">
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">WeChat</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">Alipay</p></td>
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">ETH：0xE02bb0ca283d6B058F8677607AB96EaBf0C13Bed</p></td>
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">BTC：3CJrf3FzwGEXqDHqzN5L6CymKR8Z76pZX2</p></td>
+        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">ETH：0xEcaceF1040C5dC8EE5430b5f252e3AaE7Bbb6EF3</p></td>
+        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">USDT(ERC-20)：0xEcaceF1040C5dC8EE5430b5f252e3AaE7Bbb6EF3</p></td>
     </tr>
 </table>
 
