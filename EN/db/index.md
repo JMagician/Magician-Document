@@ -10,7 +10,7 @@ Magician-JDBC，Unlike the Magician-Web component, it does not depend on Magicia
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-JDBC</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 </dependency>
 
 <!-- mysql driver package -->
