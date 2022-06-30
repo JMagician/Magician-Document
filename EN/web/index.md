@@ -14,7 +14,7 @@ The Jar package for the maven central library supports at least JDK11, but the s
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console won't see anything, any logging package that can bridge with slf4j is supported -->
@@ -79,7 +79,8 @@ public class DemoSocketHandler implements WebSocketBaseHandler {
      */
     @Override
     public void onOpen(WebSocketSession webSocketSession) {
-     
+        // Sending messages to clients
+        webSocketSession.sendString("send message");
     }
     
     /**
@@ -92,28 +93,51 @@ public class DemoSocketHandler implements WebSocketBaseHandler {
 
     /**
      * This method is triggered when a message is sent from the client
+     * The second parameter `message` is the message sent by the client
      */
     @Override
-    public void onMessage(String message, WebSocketSession webSocketSession) {
-        // The first parameter `message` is the message sent by the client
+    public void onMessage(WebSocketSession webSocketSession, byte[] message) {
+        System.out.println("Received:" + new String(message));
+
+        // Sending messages to clients
+        webSocketSession.sendString("send message");
     }
 }
-```
-
-### Send a message
-
-```java
-webSocketSession.sendString("send message");
 ```
 
 ### Launching services
 
 Both the HTTP service and the WebSocket service are started like this
 
+Basic start-up method
 ```java
 Magician.createHttp()
-                    .scan("Name of the package in which the handler is located")
-                    .bind(8080);
+        .scan("com.test")// Scanning range (package name)
+        .bind(8080); // Listening port number
+```
+
+Custom Configured Startup Methods
+```java
+// This configuration can be extracted out and does not need to be put together with the following startup code
+MagicianConfig magicianConfig = new MagicianConfig();
+magicianConfig.setNumberOfPorts(3); // Number of ports allowed to listen at the same time, default 1
+magicianConfig.setBossThreads(1); // Number of boss threads for netty Default 1
+magicianConfig.setWorkThreads(3); // Number of work threads for netty Default 1
+magicianConfig.setNettyLogLevel(LogLevel.DEBUG); // netty的日志打印级别
+magicianConfig.setMaxInitialLineLength(4096); // http decoder construction parameter 1, default 4096 same as netty
+magicianConfig.setMaxHeaderSize(8192); // http decoder construction parameter 2, default 8192 same as netty
+magicianConfig.setMaxChunkSize(8192); // http decoder construction parameter 3, default 8192 same as netty
+
+
+HttpServer httpServer = Magician.createHttp()
+        .scan("com.test")// Scanning range (package name)
+        .setConfig(magicianConfig); // set configuration
+
+httpServer.bind(8080); // Listening port number
+
+// If you want to listen to multiple ports
+httpServer.bind(8081); 
+httpServer.bind(8082); 
 ```
 
 ## Magician-Web
