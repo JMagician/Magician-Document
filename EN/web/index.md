@@ -150,7 +150,7 @@ Add this dependency to the foundation of the Magician project
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 </dependency>
 ```
 
@@ -166,7 +166,7 @@ public class DemoHandler implements HttpBaseHandler {
     public void request(MagicianRequest magicianRequest, MagicianResponse response) {
        try{
             // The main thing is this sentence
-            MagicianWeb.createWeb().request(magicianRequest);
+            MagicianWeb.request(magicianRequest);
         } catch (Exception e){
         }
     }
