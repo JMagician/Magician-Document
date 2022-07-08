@@ -213,8 +213,8 @@ public class DemoController {
 
 ```java
 Magician.createHttp()
-                    .scan("handler，controller，拦截器 所在的包名")
-                    .bind(8080);
+    .scan("扫描范围需要包含 handler，controller，拦截器")
+    .bind(8080);
 ```
 
 ### 传统方式接收参数
@@ -336,6 +336,158 @@ String token = jwtManager.createToken(要存入的对象);
 
 ```java
 原对象类 原对象 = jwtManager.getObject("token字符串", 原对象类.class);
+```
+
+## Magician-Containers
+
+### 引入依赖
+```xml
+<dependency>
+    <groupId>com.magician.containers</groupId>
+    <artifactId>Magician-Containers</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### 标记Bean
+
+不可以用在Controller上
+
+```java
+@MagicianBean
+public class DemoBean {
+
+}
+```
+
+### AOP
+
+编写AOP的逻辑
+
+```java
+public class DemoAop implements BaseAop {
+
+    /**
+     * 方法执行前
+     * @param args 被执行的方法的参数
+     */
+    public void startMethod(Object[] args) {
+        
+    }
+    
+    /**
+     * 方法执行后
+     * @param args 被执行的方法的参数
+     * @param result 被执行的方法的返回数据
+     */
+    public void endMethod(Object[] args, Object result) {
+
+    }
+    
+    /**
+     * 方法执行出现异常
+     * @param e 被执行的方法的异常信息
+     */
+    public void exp(Throwable e) {
+
+    }
+}
+```
+
+将逻辑挂到要监听的方法上
+
+```java
+@MagicianBean
+public class DemoBean {
+
+    @MagicianAop(className = DemoAop.class)
+    public void demoAopMethod() {
+
+    }
+}
+```
+
+### 定时任务
+
+```java
+@MagicianBean
+public class DemoBean {
+    
+    // loop 是轮训间隔，单位: 毫秒
+    @MagicianTimer(loop=1000)
+    public void demoTimerMethod() {
+
+    }
+}
+```
+
+### 初始化Bean
+
+```java
+@MagicianBean
+public class DemoBean implements InitBean {
+    
+    public void init(){
+        // 这个方法会在 所有Bean都创建好了以后自动执行
+        // 可以将需要初始化的数据 和 逻辑 写在这里
+    }
+}
+```
+
+### 获取Bean对象
+
+不可以写在成员变量里，因为在类实例化的时候，其他bean很可能还没创建好，会有很大几率获取不到bean对象
+
+不推荐的方式
+
+```java
+@MagicianBean
+public class DemoBean {
+
+    private DemoBean demoBean = BeanUtil.get(DemoBean.class);
+    
+    public void demoMethod() {
+
+    }
+}
+```
+
+推荐的方式一
+
+```java
+@MagicianBean
+public class DemoBean {
+
+    private DemoBean demoBean;
+    
+    public void demoMethod() {
+        demoBean = BeanUtil.get(DemoBean.class);
+    }
+}
+```
+
+推荐的方式二
+
+```java
+@MagicianBean
+public class DemoBean {
+    public void demoMethod() {
+        // 不要变量，获取Bean对象之后直接调用Bean里面的方法
+        BeanUtil.get(DemoBean.class).xxx();
+    }
+}
+```
+
+### 在启动时 加载Bean
+
+```java
+HttpServer httpServer = Magician.createHttp()
+    .scan("扫描范围需要包含所有Bean");
+
+// 必须在scan方法执行后，才能加载Bean
+MagicianContainers.load();
+
+httpServer.bind(8080);
 ```
 
 ## 数据库操作

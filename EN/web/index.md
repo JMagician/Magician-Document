@@ -212,8 +212,8 @@ public class DemoController {
 
 ```java
 Magician.createHttp()
-                    .scan("handler, controller, interceptor package name")
-                    .bind(8080);
+    .scan("handler, controller, interceptor package name")
+    .bind(8080);
 ```
 
 ### Traditional method of receiving parameters
@@ -337,7 +337,160 @@ String token = jwtManager.createToken(demo);
 Restore token
 
 ```java
-Demo demo = jwtManager.getObject("token字符串", Demo.class);
+Demo demo = jwtManager.getObject(token, Demo.class);
+```
+
+## Magician-Containers
+
+### Importing dependencies
+
+```xml
+<dependency>
+    <groupId>com.magician.containers</groupId>
+    <artifactId>Magician-Containers</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### Tagging beans
+
+Cannot be used on controllers
+
+```java
+@MagicianBean
+public class DemoBean {
+
+}
+```
+
+### AOP
+
+Writing the logic for AOP
+
+```java
+public class DemoAop implements BaseAop {
+
+    /**
+     * Before method execution
+     * @param args Parameters of the method being executed
+     */
+    public void startMethod(Object[] args) {
+        
+    }
+    
+    /**
+     * After method execution
+     * @param args Parameters of the method being executed
+     * @param result Return data of the executed method
+     */
+    public void endMethod(Object[] args, Object result) {
+
+    }
+    
+    /**
+     * Method execution exception
+     * @param e Exception information for the executed method
+     */
+    public void exp(Throwable e) {
+
+    }
+}
+```
+
+Hook the logic to the method to be listened to
+
+```java
+@MagicianBean
+public class DemoBean {
+
+    @MagicianAop(className = DemoAop.class)
+    public void demoAopMethod() {
+
+    }
+}
+```
+
+### Timed tasks
+
+```java
+@MagicianBean
+public class DemoBean {
+    
+    // loop: Rotation interval, in milliseconds
+    @MagicianTimer(loop=1000)
+    public void demoTimerMethod() {
+
+    }
+}
+```
+
+### Initializing the bean
+
+```java
+@MagicianBean
+public class DemoBean implements InitBean {
+    
+    public void init(){
+        // This method will be executed automatically when all the beans have been created
+        // You can write the data and logic that needs to be initialized here
+    }
+}
+```
+
+### Get Bean Object
+
+Can not be written in member variables, because at the time of class instantiation, other beans are likely not yet created, there is a high probability of not getting the bean object
+
+Not recommended way
+
+```java
+@MagicianBean
+public class DemoBean {
+
+    private DemoBean demoBean = BeanUtil.get(DemoBean.class);
+    
+    public void demoMethod() {
+
+    }
+}
+```
+
+Recommended way one
+
+```java
+@MagicianBean
+public class DemoBean {
+
+    private DemoBean demoBean;
+    
+    public void demoMethod() {
+        demoBean = BeanUtil.get(DemoBean.class);
+    }
+}
+```
+
+Recommended way two
+
+```java
+@MagicianBean
+public class DemoBean {
+    public void demoMethod() {
+        // No variables, after getting the bean object directly call the methods inside the bean
+        BeanUtil.get(DemoBean.class).xxx();
+    }
+}
+```
+
+### Load the bean at startup
+
+```java
+HttpServer httpServer = Magician.createHttp()
+    .scan("The scan scope needs to include all beans");
+
+// The scan method must be executed before the bean can be loaded
+MagicianContainers.load();
+
+httpServer.bind(8080);
 ```
 
 ## Database operations
