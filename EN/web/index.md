@@ -354,7 +354,9 @@ Demo demo = jwtManager.getObject(token, Demo.class);
 
 ### Tagging beans
 
-Cannot be used on controllers
+Just put an annotation on the class (Cannot be used on controllers), not all classes need to be turned into a bean, the developer is free to decide.
+
+We recommend: make it a bean only when you need to use AOP or timed tasks in the class.
 
 ```java
 @MagicianBean
@@ -491,6 +493,51 @@ HttpServer httpServer = Magician.createHttp()
 MagicianContainers.load();
 
 httpServer.bind(8080);
+```
+
+##  Magician-Configure
+
+### Importing dependencies
+```xml
+<dependency>
+    <groupId>com.magician.configure</groupId>
+    <artifactId>Magician-Configure</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### Loading configuration files
+
+Currently only properties files are supported, which you can create in any directory and then load into the project using
+
+Load from any directory on the local machine
+
+```java
+// Absolute path of the file must be used
+MagicianConfigure.load("/home/xxx/application.properties", ReadMode.EXTERNAL);
+```
+
+Load from the current project's resource directory
+
+```java
+// The path to the file under the class resource
+MagicianConfigure.load("/application.properties", ReadMode.LOCAL);
+```
+
+Loading from a remote directory
+
+```java
+// Remote path to file, HTTP only
+MagicianConfigure.load("https://www.test.com/application.properties", ReadMode.REMOTE);
+```
+
+### Get configuration data
+
+Prefer to use the configuration file, if it is not in the configuration file, it will be automatically read from the environment variables
+
+```java
+// If there is a userName key in the configuration file then it will be used directly, if not then it will go to the environment variable to read
+String userName = Environment.get("userName");
 ```
 
 ## Database operations

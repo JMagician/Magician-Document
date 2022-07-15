@@ -351,7 +351,9 @@ String token = jwtManager.createToken(要存入的对象);
 
 ### 标记Bean
 
-不可以用在Controller上
+在类上面加一个注解即可，不可以用在 controller 上，也不是所有的类都需要变成一个 bean，开发者可以随意决定。
+
+我们推荐：在你需要在这个类里面使用 AOP 或者定时任务的时候，才把它变成一个 bean。
 
 ```java
 @MagicianBean
@@ -488,6 +490,48 @@ HttpServer httpServer = Magician.createHttp()
 MagicianContainers.load();
 
 httpServer.bind(8080);
+```
+
+##  Magician-Configure
+
+### 引入依赖
+```xml
+<dependency>
+    <groupId>com.magician.configure</groupId>
+    <artifactId>Magician-Configure</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### 加载配置文件
+
+目前只支持 properties文件，你可以在任意目录下创建，然后使用以下方式将文件加载到项目中
+
+从本机任意目录加载
+```java
+// 必须写文件的绝对路径
+MagicianConfigure.load("/home/xxx/application.properties", ReadMode.EXTERNAL);
+```
+
+从当前项目的资源目录下加载
+
+```java
+// 类资源下的文件的路径
+MagicianConfigure.load("/application.properties", ReadMode.LOCAL);
+```
+
+从远程目录加载
+
+```java
+// 远程文件路径, 只支持http协议
+MagicianConfigure.load("https://www.test.com/application.properties", ReadMode.REMOTE);
+```
+
+### 获取配置数据
+
+```java
+// 如果配置文件里有userName这个key，那么就会直接使用，如果没有 那么会去环境变量读取
+String userName = Environment.get("userName");
 ```
 
 ## 数据库操作
