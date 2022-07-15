@@ -12,7 +12,7 @@ features:
   details: A database operations framework that supports multiple data sources, transaction management, paging queries, single table operations without SQL, complex operations can write their own SQL, support for entity parameters, support for {} and ? placeholder
 - title: Magician-Containers
   details: Container management module that allows for the unified management of beans in a project, which brings two extensions, AOP and timed tasks
-- title: Magician-Configure（Under Development...）
+- title: Magician-Configure
   details: Magician-Configure is a configuration manager that can easily read configuration files from external, remote, and local(class resource directories) and cache them in key-value form in the project. When fetching configuration data, if it is not in the cache, it will automatically go to the environment variables to fetch
 footer: MIT protocol based open source projects | Email - yuyemail123@gmail.com
 ---
