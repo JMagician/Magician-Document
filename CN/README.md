@@ -1,8 +1,8 @@
 ---
 home: true
 heroImage: https://magician-io.com/source/images/logo1.png
-actionText: 快速上手 →
-actionLink: /web/index.md
+actionText: 视频演示 →
+actionLink: https://www.bilibili.com/video/BV1AV4y1E7AM?spm_id_from=333.999.0.0&vd_source=f4c8caf8f0691160cc645e85690569be
 features:
 - title: Magician
   details: 基于Netty开发的一个 小型Http服务，支持http和WebSocket，可以采用注解来声明Handler

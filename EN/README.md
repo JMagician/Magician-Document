@@ -1,8 +1,8 @@
 ---
 home: true
 heroImage: https://magician-io.com/source/images/logo1.png
-actionText: Document →
-actionLink: /web/index.md
+actionText: Video →
+actionLink: https://www.bilibili.com/video/BV1AV4y1E7AM?spm_id_from=333.999.0.0&vd_source=f4c8caf8f0691160cc645e85690569be
 features:
 - title: Magician
   details: A small Http service based on Netty that supports http and WebSocket and can use annotations to declare Handler, If you want to develop an http service with netty but find it cumbersome, then Magician may help you.
