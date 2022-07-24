@@ -14,6 +14,6 @@ features:
   details: 容器管理模块，可以很方便的对项目中的bean进行管理，当Bean被管理起来以后就可以绑定一些功能上去了，目前绑定的功能有， AOP 和 定时任务
 - title: Magician-Configure
   details: 配置管理器，它可以轻松地从外部、远程和本地（类资源目录）读取配置文件，并以键值形式缓存在项目中。在获取配置数据时，如果它不在缓存中，它会自动去环境变量中获取
-footer: 基于MIT协议的开源项目 | 微信公众号 - Magician IO | Email - yuyemail123@gmail.com
+footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail123@gmail.com
 ---
 
