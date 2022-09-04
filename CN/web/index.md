@@ -14,7 +14,7 @@ Maven中央库的Jar包 最低支持JDK11，但是源码最低支持JDK8，如�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician</artifactId>
-    <version>2.0.5</version>
+    <version>2.0.6</version>
 </dependency>
 
 <!-- 这是日志包，必须有，不然控制台看不到东西，支持任意可以和slf4j桥接的日志包 -->
@@ -151,7 +151,7 @@ httpServer.bind(8082);
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
@@ -345,7 +345,7 @@ String token = jwtManager.createToken(要存入的对象);
 <dependency>
     <groupId>com.magician.containers</groupId>
     <artifactId>Magician-Containers</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -438,58 +438,13 @@ public class DemoBean implements InitBean {
 
 ### 获取Bean对象
 
-不可以写在成员变量里，因为在类实例化的时候，其他bean很可能还没创建好，会有很大几率获取不到bean对象
-
-不推荐的方式
-
 ```java
 @MagicianBean
-public class DemoBean {
+public class DemoBeanTwo {
 
     private DemoBean demoBean = BeanUtil.get(DemoBean.class);
     
-    public void demoMethod() {
-
-    }
 }
-```
-
-推荐的方式一
-
-```java
-@MagicianBean
-public class DemoBean {
-
-    private DemoBean demoBean;
-    
-    public void demoMethod() {
-        demoBean = BeanUtil.get(DemoBean.class);
-    }
-}
-```
-
-推荐的方式二
-
-```java
-@MagicianBean
-public class DemoBean {
-    public void demoMethod() {
-        // 不要变量，获取Bean对象之后直接调用Bean里面的方法
-        BeanUtil.get(DemoBean.class).xxx();
-    }
-}
-```
-
-### 在启动时 加载Bean
-
-```java
-HttpServer httpServer = Magician.createHttp()
-    .scan("扫描范围需要包含所有Bean");
-
-// 必须在scan方法执行后，才能加载Bean
-MagicianContainers.load();
-
-httpServer.bind(8080);
 ```
 
 ##  Magician-Configure

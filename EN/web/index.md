@@ -14,7 +14,7 @@ The Jar package for the maven central library supports at least JDK11, but the s
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician</artifactId>
-    <version>2.0.5</version>
+    <version>2.0.6</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console won't see anything, any logging package that can bridge with slf4j is supported -->
@@ -150,7 +150,7 @@ Add this dependency to the foundation of the Magician project
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
@@ -348,7 +348,7 @@ Demo demo = jwtManager.getObject(token, Demo.class);
 <dependency>
     <groupId>com.magician.containers</groupId>
     <artifactId>Magician-Containers</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -441,58 +441,13 @@ public class DemoBean implements InitBean {
 
 ### Get Bean Object
 
-Can not be written in member variables, because at the time of class instantiation, other beans are likely not yet created, there is a high probability of not getting the bean object
-
-Not recommended way
-
 ```java
 @MagicianBean
-public class DemoBean {
+public class DemoBeanTwo {
 
     private DemoBean demoBean = BeanUtil.get(DemoBean.class);
     
-    public void demoMethod() {
-
-    }
 }
-```
-
-Recommended way one
-
-```java
-@MagicianBean
-public class DemoBean {
-
-    private DemoBean demoBean;
-    
-    public void demoMethod() {
-        demoBean = BeanUtil.get(DemoBean.class);
-    }
-}
-```
-
-Recommended way two
-
-```java
-@MagicianBean
-public class DemoBean {
-    public void demoMethod() {
-        // No variables, after getting the bean object directly call the methods inside the bean
-        BeanUtil.get(DemoBean.class).xxx();
-    }
-}
-```
-
-### Load the bean at startup
-
-```java
-HttpServer httpServer = Magician.createHttp()
-    .scan("The scan scope needs to include all beans");
-
-// The scan method must be executed before the bean can be loaded
-MagicianContainers.load();
-
-httpServer.bind(8080);
 ```
 
 ##  Magician-Configure
