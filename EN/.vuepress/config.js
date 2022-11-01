@@ -5,13 +5,19 @@ module.exports = {
   themeConfig: {
       nav: [
         { text: 'Home', link: '/' },
-        { text: 'Github', link: 'https://github.com/JMagician' },              
+        { text: 'Github',
+          items: [
+            { text: 'Web', link: 'https://github.com/JMagician'},
+            { text: 'Block Chain', link: 'https://github.com/Magician-blockchain'}
+          ]
+        },              
         { text: 'Discussions', link: 'https://github.com/JMagician/Magician/discussions' },
         {
           text: 'Document',
           items: [
             { text: 'Magician', link: '/web/index.md' },
-            { text: 'Magician-JDBC', link: '/db/index.md' }
+            { text: 'Magician-JDBC', link: '/db/index.md' },
+            { text: 'Block Chain', link: '/db/index.md' }
           ]
         },
         { text: 'Sponsor', link: '/sponsor/sponsor.md' }, 

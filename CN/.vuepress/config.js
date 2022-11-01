@@ -5,13 +5,20 @@ module.exports = {
     themeConfig: {
         nav: [
           { text: '首页', link: '/' },
-          { text: 'Github', link: 'https://github.com/JMagician' },              
+          { 
+            text: 'Github', 
+            items: [
+              { text: 'Web', link: 'https://github.com/JMagician'},
+              { text: '区块链', link: 'https://github.com/Magician-blockchain'}
+            ]
+          },              
           { text: '社区', link: 'https://github.com/JMagician/Magician/discussions' },
           {
             text: '文档',
             items: [
               { text: 'Magician', link: '/web/index.md' },
-              { text: 'Magician-JDBC', link: '/db/index.md' }
+              { text: 'Magician-JDBC', link: '/db/index.md' },
+              { text: '区块链', link: '/db/index.md' }
             ]
           },
           { text: '赞助', link: '/sponsor/sponsor.md' }, 
