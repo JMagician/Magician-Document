@@ -4,6 +4,8 @@ heroImage: https://magician-io.com/source/images/logo1.png
 actionText: 视频演示 →
 actionLink: https://www.bilibili.com/video/BV1AV4y1E7AM?spm_id_from=333.999.0.0&vd_source=f4c8caf8f0691160cc645e85690569be
 features:
+- title: Magician-web3
+  details: Magician-web3是一个区块链开发工具包。它由两个功能组成。一个是扫描区块链，根据开发者的需要监控交易。另一个是对web3j的一些二次打包，可以减少开发者在一些常见场景下的工作量。它计划支持三种链，ETH（BSC、POLYGAN等）、SOL和TRON
 - title: Magician
   details: 基于Netty开发的一个 小型Http服务，支持http和WebSocket，可以采用注解来声明Handler
 - title: Magician-Web

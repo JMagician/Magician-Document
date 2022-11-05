@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Magician',
-    description: '基于Netty开发的Web解决方案',
+    description: '一套Java开发的工具包，可以满足区块链 和 Web开发的大部分场景',
     base: '/cn/',
     themeConfig: {
         nav: [
@@ -8,17 +8,17 @@ module.exports = {
           { 
             text: 'Github', 
             items: [
-              { text: 'Web', link: 'https://github.com/JMagician'},
-              { text: '区块链', link: 'https://github.com/Magician-blockchain'}
+              { text: '区块链', link: 'https://github.com/Magician-blockchain'},
+              { text: 'Web', link: 'https://github.com/JMagician'}
             ]
           },              
           { text: '社区', link: 'https://github.com/JMagician/Magician/discussions' },
           {
             text: '文档',
             items: [
+              { text: '区块链', link: '/chain/index.md' },
               { text: 'Magician', link: '/web/index.md' },
-              { text: 'Magician-JDBC', link: '/db/index.md' },
-              { text: '区块链', link: '/db/index.md' }
+              { text: 'Magician-JDBC', link: '/db/index.md' }
             ]
           },
           { text: '赞助', link: '/sponsor/sponsor.md' }, 
