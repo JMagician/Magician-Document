@@ -188,3 +188,33 @@ SendResultModel sendResultModel = ethContract.sendRawTransaction(
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
 ```
+
+## 项目内置了几个functionCode
+
+如果你刚好要监听这几个函数，那么可以直接用，前提是你的合约里的函数必须跟 Openzeppelin 的规范一样，连参数列表的顺序都必须一样
+
+### ERC20
+
+```java
+ERC20.TRANSFER.getFunctionCode();
+ERC20.APPROVE.getFunctionCode();
+ERC20.TRANSFER_FROM.getFunctionCode();
+```
+
+### ERC721
+
+```java
+ERC721.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC721.SAFE_TRANSFER_FROM_TWO.getFunctionCode(); // 没有data的那个
+ERC721.TRANSFER_FROM.getFunctionCode();
+ERC721.APPROVE.getFunctionCode();
+ERC721.SET_APPROVAL_FOR_ALL.getFunctionCode();
+```
+
+### ERC1155
+
+```java
+ERC1155.SET_APPROVAL_FOR_ALL.getFunctionCode();
+ERC1155.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC1155.SAFE_BATCH_TRANSFER_FROM.getFunctionCode();
+```

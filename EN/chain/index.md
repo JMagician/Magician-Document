@@ -190,3 +190,33 @@ SendResultModel sendResultModel = ethContract.sendRawTransaction(
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
 ```
+
+## The project has several built-in functionCode
+
+If you need to listen to these functions, then you can use them directly, as long as the functions in your contract have the same specification as Openzeppelin, and even the order of the parameter list must be the same
+
+### ERC20
+
+```java
+ERC20.TRANSFER.getFunctionCode();
+ERC20.APPROVE.getFunctionCode();
+ERC20.TRANSFER_FROM.getFunctionCode();
+```
+
+### ERC721
+
+```java
+ERC721.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC721.SAFE_TRANSFER_FROM_TWO.getFunctionCode(); // The one without the data parameter
+ERC721.TRANSFER_FROM.getFunctionCode();
+ERC721.APPROVE.getFunctionCode();
+ERC721.SET_APPROVAL_FOR_ALL.getFunctionCode();
+```
+
+### ERC1155
+
+```java
+ERC1155.SET_APPROVAL_FOR_ALL.getFunctionCode();
+ERC1155.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC1155.SAFE_BATCH_TRANSFER_FROM.getFunctionCode();
+```
