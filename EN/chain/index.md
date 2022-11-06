@@ -11,8 +11,8 @@ He does not need to rely on Magician and can be used completely independently
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-web3</artifactId>
-    <version>1.0.0</version>
+    <artifactId>Magician-Web3</artifactId>
+    <version>1.0.1</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
