@@ -108,7 +108,10 @@ Several basic methods have been extended on top of Web3j to reduce the workload 
 String privateKey = ""; // Private key
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
 
+// This approach is a single instance of
 EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j, privateKey);
+// If you want to create multiple EthHelper objects, you can do so in this way
+EthHelper ethHelper = EthHelper.builder(web3j, privateKey);
 
 // Balance Query
 BigInteger balance = ethHelper.balanceOf(fromAddress);
@@ -124,7 +127,10 @@ TransactionReceipt transactionReceipt = ethHelper.transfer(
 ### InputData Codec
 
 ```java
+// This approach is a single instance of
 EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
+// If you want to create multiple EthAbiCodec objects, you can do so in this way
+EthAbiCodec ethAbiCodec = new EthAbiCodec();
 
 // Encoding
 String inputData = ethAbiCodec.getInputData(
@@ -159,7 +165,12 @@ String functionCode = ethAbiCodec.getFunAbiCode(
 String privateKey = ""; // Private key
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
 
+// This approach is a single instance of
 EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j, fromAddressPrivateKey);
+// If you want to create multiple EthContract objects, you can do so in this way
+EthContract ethContract = EthContract.builder(web3j, privateKey);
+
+
 EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
 
 // Query
