@@ -14,7 +14,7 @@ Maven中央库的Jar包 最低支持JDK11，但是源码最低支持JDK8，如�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician</artifactId>
-    <version>2.0.6</version>
+    <version>2.0.7</version>
 </dependency>
 
 <!-- 这是日志包，必须有，不然控制台看不到东西，支持任意可以和slf4j桥接的日志包 -->
