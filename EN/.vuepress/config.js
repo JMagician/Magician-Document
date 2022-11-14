@@ -21,7 +21,12 @@ module.exports = {
           ]
         },
         { text: 'Sponsor', link: '/sponsor/sponsor.md' }, 
-        { text: 'Telegram', link: 'https://t.me/magicianio'},
+        { text: 'Social Networks', 
+            items: [
+              {text: 'Telegram', link: 'https://t.me/magicianio'},
+              {text: 'Weibo(@Beeruscc)', link: 'https://weibo.com/u/5453518101'}
+            ]
+          },
         {
           text: 'Languages',
           items: [

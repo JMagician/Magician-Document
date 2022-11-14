@@ -12,14 +12,14 @@ sidebar: 'false'
     <tr style="border:0px">
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/wx.webp" width="200px"/></td>
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/alipay.webp" width="200px"/></td>
-        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/eth.png" width="200px"/></td>
-        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/usdt.png" width="200px"/></td>
+        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/erc20.png" width="200px"/></td>
+        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/trc20.png" width="200px"/></td>
     </tr>
     <tr style="border:0px; background-color:#ffffff">
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">微信</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">支付宝</p></td>
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">ETH：0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84</p></td>
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">USDT(ERC-20)：0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84</p></td>
+        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">ETH, USDT(ERC-20)：0x97f3864F8A12FD65b6bF429D518d02919091A617</p></td>
+        <td style="border:0px;text-align:center" valign="top"><p style="width:150px;word-wrap: break-word; word-break: normal;">USDT(TRC-20)：TNvWFqVVT6P36h8Fsk7KBg2X2h3pfz2vN4</p></td>
     </tr>
 </table>
 

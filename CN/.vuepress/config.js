@@ -22,7 +22,12 @@ module.exports = {
             ]
           },
           { text: '赞助', link: '/sponsor/sponsor.md' }, 
-          { text: 'Telegram', link: 'https://t.me/magicianio'},
+          { text: '社交平台', 
+            items: [
+              {text: 'Telegram', link: 'https://t.me/magicianio'},
+              {text: '微博(@Beeruscc)', link: 'https://weibo.com/u/5453518101'}
+            ]
+          },
           {
             text: '语言',
             items: [
