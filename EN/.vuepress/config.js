@@ -28,7 +28,7 @@ module.exports = {
             ]
           },
         {
-          text: 'Languages',
+          text: '语言',
           items: [
             { text: '简体中文', link: 'https://magician-io.com/cn/' },
             { text: 'English', link: 'https://magician-io.com' }
