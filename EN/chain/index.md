@@ -12,7 +12,7 @@ He does not need to rely on Magician and can be used completely independently
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web3</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -98,7 +98,7 @@ MagicianBlockchainScan.create()
 // TODO SOL and TRON are not supported for now, under development......
 ```
 
-Using a proxy to access RPC addresses
+### Using a proxy to access RPC addresses
 
 ```java
 // Use another overload of the setRpcUrl method and just pass in the proxy settings
@@ -118,7 +118,6 @@ MagicianBlockchainScan.create()
 // Pass in okHttpClient
 // This method is also very customizable and basically uses okHttp to access the blockchain node
 OkHttpClient okHttpClient = xxxxxx;
-
 MagicianBlockchainScan.create()
         .setRpcUrl(okHttpClient) 
         .start();

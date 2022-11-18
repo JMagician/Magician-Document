@@ -12,7 +12,7 @@ Magician-web3是一个区块链开发工具包。它由两个功能组成。一�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web3</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -97,7 +97,7 @@ MagicianBlockchainScan.create()
 // TODO 暂时不支持SOL和TRON， 正在开发中......
 ```
 
-使用代理访问RPC地址
+### 使用代理访问RPC地址
 
 ```java
 // 使用 setRpcUrl 方法的另一个重载，传入代理设置即可
@@ -117,7 +117,6 @@ MagicianBlockchainScan.create()
 // 传入okHttpClient
 // 这种方法 可定制化程度也非常高，基本上就是使用okHttp访问 区块链节点了
 OkHttpClient okHttpClient = xxxxxx;
-
 MagicianBlockchainScan.create()
         .setRpcUrl(okHttpClient) 
         .start();
