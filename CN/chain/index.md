@@ -97,6 +97,46 @@ MagicianBlockchainScan.create()
 // TODO 暂时不支持SOL和TRON， 正在开发中......
 ```
 
+使用代理访问RPC地址
+
+```java
+// 使用 setRpcUrl 方法的另一个重载，传入代理设置即可
+MagicianBlockchainScan.create()
+        .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780))) 
+        .start();
+
+// ---------- 除了上面那种以外，setRpcUrl 方法一共有这么几种重载，根据你的需求挑选合适的方法 ----------
+
+// 直接传入 wei3j的HttpService
+// 这种方法 可定制化最高，基本上就是web3j本来的使用方式
+MagicianBlockchainScan.create()
+        .setRpcUrl(new HttpService("")) 
+        .start();
+
+// 传入okHttpClient
+// 这种方法 可定制化程度也非常高，基本上就是使用okHttp访问 区块链节点了
+OkHttpClient okHttpClient = xxxxxx;
+
+MagicianBlockchainScan.create()
+        .setRpcUrl(okHttpClient) 
+        .start();
+
+// 有些代理服务器 需要鉴权，可以使用这种方式来设置用户名和密码
+MagicianBlockchainScan.create()
+                    .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                            new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
+                            (Route route, Response response) -> {
+
+                                //设置代理服务器账号密码
+                                String credential = Credentials.basic("用户名", "密码");
+                                return response.request().newBuilder()
+                                        .header("Proxy-Authorization", credential)
+                                        .build();
+                            }
+                    )
+```
+
 ## Web3j 扩展
 
 在Web3j 的基础上进行了二次封装，扩展了几个基础的方法，可以在一定程度上减轻开发者的工作量

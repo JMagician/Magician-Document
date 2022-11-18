@@ -98,6 +98,46 @@ MagicianBlockchainScan.create()
 // TODO SOL and TRON are not supported for now, under development......
 ```
 
+Using a proxy to access RPC addresses
+
+```java
+// Use another overload of the setRpcUrl method and just pass in the proxy settings
+MagicianBlockchainScan.create()
+        .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780))) 
+        .start();
+
+// ---------- In addition to the above, there are several overloads for the setRpcUrl method, so pick the right one according to your needs ----------
+
+// Pass directly into wei3j's HttpService
+// This method is the most customizable and is basically the way web3j is supposed to be used
+MagicianBlockchainScan.create()
+        .setRpcUrl(new HttpService("")) 
+        .start();
+
+// Pass in okHttpClient
+// This method is also very customizable and basically uses okHttp to access the blockchain node
+OkHttpClient okHttpClient = xxxxxx;
+
+MagicianBlockchainScan.create()
+        .setRpcUrl(okHttpClient) 
+        .start();
+
+// Some proxies require authentication, so you can use this to set the username and password
+MagicianBlockchainScan.create()
+                    .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                            new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
+                            (Route route, Response response) -> {
+
+                                // Set the proxy server account password
+                                String credential = Credentials.basic("username", "password");
+                                return response.request().newBuilder()
+                                        .header("Proxy-Authorization", credential)
+                                        .build();
+                            }
+                    )
+```
+
 ## Web3j Extensions
 
 Several basic methods have been extended on top of Web3j to reduce the workload of developers to a certain extent
