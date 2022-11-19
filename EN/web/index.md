@@ -4,9 +4,7 @@
 
 ### Running environment
 
-JDK11+
-
-The Jar package for the maven central library supports at least JDK11, but the source code can support at least jdk8, if you need to run on 8, you can download the latest tag and compile it yourself
+JDK8+
 
 ### Importing dependencies
 
