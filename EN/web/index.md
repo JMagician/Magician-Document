@@ -66,6 +66,28 @@ request.getRequestHeader("header name");
 request.getRequestHeaders();
 ```
 
+### Response Data
+
+```java
+// response text data
+request.getResponse().sendText("");
+
+// response html data
+request.getResponse().sendHtml("");
+
+// Respond with custom formatted data You need to set the content-type yourself
+request.getResponse().sendData("");
+
+// response json data
+request.getResponse().sendJson("");
+
+// response binary
+request.getResponse().sendStream("");
+
+// Respond to error prompts, format {"code":500, "msg":""}
+request.getResponse().sendErrorMsg(500, "");
+```
+
 ### Create WebSocketHandler (WebSocket service)
 
 ```java
@@ -138,7 +160,7 @@ httpServer.bind(8081);
 httpServer.bind(8082); 
 ```
 
-## Magician-Web
+## Magician-Route
 
 ### Importing dependencies
 
@@ -147,14 +169,14 @@ Add this dependency to the foundation of the Magician project
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-Web</artifactId>
-    <version>2.0.3</version>
+    <artifactId>Magician-Route</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
 ### Creating a core Handler
 
-Only one HttpHandler is allowed, this Handler acts as a distributor and distributes the request to the Controller
+Only one HttpHandler is allowed, this Handler acts as a distributor and distributes the request to the Route
 
 ```java
 @HttpHandler(path="/")
@@ -164,54 +186,58 @@ public class DemoHandler implements HttpBaseHandler {
     public void request(MagicianRequest magicianRequest, MagicianResponse response) {
        try{
             // The main thing is this sentence
-            MagicianWeb.request(magicianRequest);
+            MagicianRoute.request(magicianRequest);
         } catch (Exception e){
         }
     }
 }
 ```
 
-### Creating a Controller
-
-```java
-@Route("/demoController")
-public class DemoController {
-
-	// Parameters can be received using entity classes and any request method is supported
-	@Route(value = "/demo", requestMethod = ReqMethod.POST)
-	public DemoVO demo(DemoVO demoVO){
-		return demoVO;
-	}
-
-	// Parameters can also be received in the traditional way, by calling the method inside the `request` to get the parameters
-    // For the reception method here, scroll up and look at the heading 'Reception Parameters'
-    // This approach can be mixed with the above mentioned entity class receiving parameters
-	@Route(value = "/demob", requestMethod = ReqMethod.POST)
-	public String demob(MagicianRequest request){
-        request.getParam("name");
-		return "ok";
-	}
-
-	// To download a file, simply return the ResponseInputStream
-	@Route(value = "/demob", requestMethod = ReqMethod.POST)
-	public ResponseInputStream demob(){
-		ResponseInputStream responseInputStream = new ResponseInputStream();
-		responseInputStream.setName("file name");
-		responseInputStream.setBytes(file bytes);
-		return responseInputStream;
-	}
-}
-```
-
 ### Modify scan range
 
-- The scan scope needs to include the [handler, controller, interceptor package name].
+- The scan scope needs to include the [handler, route, interceptor package name].
 - More than one can be comma-separated, or can be configured as their parent package name
 
 ```java
 Magician.createHttp()
-    .scan("handler, controller, interceptor package name")
+    .scan("handler, route, interceptor package name")
     .bind(8080);
+```
+
+### Create routes
+
+- Such a class can create more than one, according to your needs to put the route into different classes
+- inside each route, if there is no special need, you can not add try-catch, by the framework internal processing, once the exception occurs, will be the exception information in the form of json response to the client
+- directly return the object to be responded to, the framework will automatically convert to json and return to the client, you can also use the following example of "Magician's native response" to return data to the client, see the Magician documentation in the <Response Data> for details
+
+```java
+@Route
+public class DemoRoute implements MagicianInitRoute {
+
+
+    @Override
+    public void initRoute(MagicianRouteCreate routeCreate) {
+
+        routeCreate.get("/demo/getForm", request -> {
+            return "{\"msg\":\"hello login\"}";
+        });
+
+        // Magician's native response
+        routeCreate.get("/demo/getForm2", request -> {
+            request.getResponse().sendJson("{\"msg\":\"hello login\"}");
+            return null;
+        });
+
+        routeCreate.post("/demo/json", request -> {
+
+            DemoResponseVo demoResponseVo = new DemoResponseVo();
+            demoResponseVo.setName("Beerus");
+
+            return demoResponseVo;
+        });
+    }
+
+}
 ```
 
 ### Traditional method of receiving parameters
@@ -274,40 +300,93 @@ private String password;
 - msg: if the check does not pass, return the prompt text on the front end
 - reg: regular expression, only valid for string types
 
-### Creating Interceptors
+### Converting parameters to entity objects
 
-Create a class that implements the MagicianInterceptor interface
+If you want the entity class to receive parameters smoothly and for parameter validation to take effect, then you must do the following steps.
+This method uses reflection internally, if you can't accept the performance of reflection then you can not apply this method, the choice is yours
 
-- Add the @Interceptor(pattern = "*") annotation to the class
-- The pattern attribute is the interceptor's rule, if you want to intercept all routes, configure it as *, otherwise it must start with /.
-- If the interceptor passes, simply return SUCCESS, if not, return an error message (the returned object will be converted to json).
+- Convert only
 
 ```java
-@Interceptor(pattern = "/demoController/*")
-public class DemoInter implements MagicianInterceptor {
+routeCreate.get("/demo/getForm", request -> {
 
-    /**
-     * Before routing execution
-     * @param magicianRequest
-     * @return
-     */
+    DemoVO demoVO = ConversionUtil.conversion(request, DemoVO.class);
+
+    return "{\"msg\":\"hello login\"}";
+});
+```
+
+- Conversion + Parameter Verification
+
+If the verification fails, the conversionAndVerification method will throw an exception, which will be automatically responded to the client and does not need to be handled by the developer
+
+```java
+routeCreate.get("/demo/getForm", request -> {
+
+    DemoVO demoVO = ConversionUtil.conversionAndVerification(request, DemoVO.class);
+
+    return "{\"msg\":\"hello login\"}";
+});
+```
+
+If you want to get the checksum failure message and handle it yourself, you can use this method
+
+```java
+routeCreate.get("/demo/getForm", request -> {
+
+    try {
+        DemoVO demoVO = ConversionUtil.conversionAndVerification(request, DemoVO.class);
+    } catch(VerificationException e){
+        // This is the message of verification failure
+        String msg = e.getMessage();
+    }
+    
+    return "{\"msg\":\"hello login\"}";
+});
+```
+
+### Creating interceptors
+
+As with routing, you can create as many of these classes as you need, putting the interceptors into different classes
+
+- The first parameter is the interceptor rule, configure it to * if you want to intercept all routes, otherwise it must start with /.
+
+- If the interceptor passes, it simply returns SUCCESS, if not, it returns an error message (the returned object will be converted to json).
+
+```java
+@Interceptor
+public class DemoInter implements MagicianInitInterceptor {
+
     @Override
-    public Object before(MagicianRequest magicianRequest) {
-        System.out.println(magicianRequest);
-        return SUCCESS;
+    public void initInterceptor(MagicianInterceptorCreate interceptorCreate) {
+
+        interceptorCreate.addInterceptor("/demo/*", new MagicianInterceptor() {
+            @Override
+            public Object before(MagicianRequest magicianRequest) {
+                System.out.println("Accessed the interceptor");
+                return SUCCESS;
+            }
+
+            @Override
+            public Object after(MagicianRequest magicianRequest, Object o) {
+                return SUCCESS;
+            }
+        });
+
+        interceptorCreate.addInterceptor("/*/form", new MagicianInterceptor() {
+            @Override
+            public Object before(MagicianRequest magicianRequest) {
+                System.out.println("Accessed the interceptor2");
+                return SUCCESS;
+            }
+
+            @Override
+            public Object after(MagicianRequest magicianRequest, Object o) {
+                return SUCCESS;
+            }
+        });
     }
 
-    /**
-     * After routing execution
-     * @param magicianRequest
-     * @param o Data returned by routing
-     * @return
-     */
-    @Override
-    public Object after(MagicianRequest magicianRequest, Object o) {
-        System.out.println(o);
-        return SUCCESS;
-    }
 }
 ```
 
@@ -318,9 +397,9 @@ Creating a jwt managed object is a new object each time it is created, so a stat
 ```java
 JwtManager jwtManager = JwtManager
             .builder()
-            .setSecret("秘钥")
-            .setCalendarField(Calendar.MILLISECOND) // 过期时间单位，默认：毫秒
-            .setCalendarInterval(86400);// 过期时间，默认86400
+            .setSecret("Secret Key")
+            .setCalendarField(Calendar.MILLISECOND) // Expiration time unit, default: milliseconds
+            .setCalendarInterval(86400);// Expiration time, default 86400
 ```
 
 Creating a token
@@ -493,7 +572,8 @@ Prefer to use the configuration file, if it is not in the configuration file, it
 String userName = Environment.get("userName");
 ```
 
-## Database operations
+## More functions
 
-[Click here -> Jump to database operations](/db/index.md)
+- [Click here -> Jump to database operations](/db/index.md)
+- [Click here -> Jump to Magician-Web](magician-web.md)
 

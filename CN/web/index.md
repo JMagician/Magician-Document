@@ -33,7 +33,7 @@ public class DemoHandler implements HttpBaseHandler {
     public void request(MagicianRequest request, MagicianResponse response) {
         // response data
         request.getResponse()
-                .sendJson(200, "{'status':'ok'}");
+                .sendJson("{'status':'ok'}");
     }
 }
 ```
@@ -64,6 +64,28 @@ request.getRequestHeader("header name");
 
 // 获取所有请求头
 request.getRequestHeaders();
+```
+
+### 响应参数
+
+```java
+// 响应文本数据
+request.getResponse().sendText("");
+
+// 响应html数据
+request.getResponse().sendHtml("");
+
+// 响应其他数据，这种方式需要 先设置响应头的Content-Type
+request.getResponse().sendData("");
+
+// 响应json数据
+request.getResponse().sendJson("");
+
+// 响应流数据，一般用作文件下载
+request.getResponse().sendStream("");
+
+// 响应错误数据，格式 {"code":500, "msg":""}
+request.getResponse().sendErrorMsg(500, "");
 ```
 
 ### 创建WebSocketHandler(WebSocket服务)
@@ -138,8 +160,7 @@ httpServer.bind(8081);
 httpServer.bind(8082); 
 ```
 
-
-## Magician-Web
+## Magician-Route
 
 ### 引入依赖
 
@@ -148,14 +169,14 @@ httpServer.bind(8082);
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-Web</artifactId>
-    <version>2.0.3</version>
+    <artifactId>Magician-Route</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
 ### 创建核心Handler
 
-只允许有一个HttpHandler，这个Handler作为分发器，将请求分发给Controller
+只允许有一个HttpHandler，这个Handler作为分发器，将请求分发给Route
 
 ```java
 @HttpHandler(path="/")
@@ -165,59 +186,63 @@ public class DemoHandler implements HttpBaseHandler {
     public void request(MagicianRequest magicianRequest, MagicianResponse response) {
        try{
             // 主要是这句
-            MagicianWeb.request(magicianRequest);
+            MagicianRoute.request(magicianRequest);
         } catch (Exception e){
         }
     }
 }
 ```
 
-### 创建Controller
-
-```java
-@Route("/demoController")
-public class DemoController {
-
-	// 可以使用实体类接收参数，支持任意请求方式
-	@Route(value = "/demo", requestMethod = ReqMethod.POST)
-	public DemoVO demo(DemoVO demoVO){
-		return demoVO;
-	}
-
-	// 也可以使用传统的方式接收参数，调用request里面的方法获取参数
-    // 这里的接收方式，可以往上翻，看标题《接收参数》
-    // 这种方式可以跟 上面提到的 实体类接收参数 混用
-	@Route(value = "/demob", requestMethod = ReqMethod.POST)
-	public String demob(MagicianRequest request){
-        request.getParam("name");
-		return "ok";
-	}
-
-	// 文件下载，只需要返回 ResponseInputStream 即可
-	@Route(value = "/demob", requestMethod = ReqMethod.POST)
-	public ResponseInputStream demob(){
-		ResponseInputStream responseInputStream = new ResponseInputStream();
-		responseInputStream.setName("file name");
-		responseInputStream.setBytes(file bytes);
-		return responseInputStream;
-	}
-}
-```
-
 ### 修改扫描范围
 
-- 扫描范围 需要包含【handler，controller，拦截器 所在的包名】
+- 扫描范围 需要包含【handler，route，拦截器 所在的包名】
 - 多个可以逗号分割，也可以直接配置成 他们的父包名
 
 ```java
 Magician.createHttp()
-    .scan("扫描范围需要包含 handler，controller，拦截器")
+    .scan("扫描范围需要包含 handler，route，拦截器")
     .bind(8080);
+```
+
+### 创建路由
+
+- 这样的类可以创建多个，根据你的需求 将路由分开创建
+- 每个路由内部，如果没有特别的需要 就不需要加try-catch，框架内部做了处理，一旦发生异常，会将异常信息以json的形式响应给客户端
+- 直接返回需要响应的对象，框架会自动转成json并返回给客户端，你也可以采用如下示例中“Magician的原生响应方式” 将数据返回给客户端，具体可以看Magician文档的《响应参数》
+
+```java
+@Route
+public class DemoRoute implements MagicianInitRoute {
+
+
+    @Override
+    public void initRoute(MagicianRouteCreate routeCreate) {
+
+        routeCreate.get("/demo/getForm", request -> {
+            return "{\"msg\":\"hello login\"}";
+        });
+
+        // Magician的原生响应方式
+        routeCreate.get("/demo/getForm2", request -> {
+            request.getResponse().sendJson("{\"msg\":\"hello login\"}");
+            return null;
+        });
+
+        routeCreate.post("/demo/json", request -> {
+
+            DemoResponseVo demoResponseVo = new DemoResponseVo();
+            demoResponseVo.setName("Beerus");
+
+            return demoResponseVo;
+        });
+    }
+
+}
 ```
 
 ### 传统方式接收参数
 
-这里只是简单的列举一下，具体的可以看上面的标题《接收参数》
+这里只是简单的列举一下，具体的可以看Magician文档里面的《接收参数》
 
 ```java
 // 获取 表单 以及 formData 提交的参数
@@ -275,40 +300,92 @@ private String password;
 - msg：校验不通过的时候，返回前端的提示文字
 - reg：正则表达式，只对String类型有效
 
+### 将参数转化为实体对象
+
+如果你想让实体类顺利的接收到参数，并且让参数验证生效，那么必须做如下步骤，
+这种方式 底层是用的反射，如果你无法接受反射的性能，那么可以不用这种方式，选择权在你自己
+
+- 只转化
+
+```java
+routeCreate.get("/demo/getForm", request -> {
+
+    DemoVO demoVO = ConversionUtil.conversion(request, DemoVO.class);
+
+    return "{\"msg\":\"hello login\"}";
+});
+```
+
+- 转化+参数验证
+
+如果验证失败，conversionAndVerification 方法会抛出一个异常，这个异常会自动被响应给客户端，不需要开发者处理
+
+```java
+routeCreate.get("/demo/getForm", request -> {
+
+    DemoVO demoVO = ConversionUtil.conversionAndVerification(request, DemoVO.class);
+
+    return "{\"msg\":\"hello login\"}";
+});
+```
+
+如果你想获取到验证失败的提示信息 自己处理，可以用这种方式
+
+```java
+routeCreate.get("/demo/getForm", request -> {
+
+    try {
+        DemoVO demoVO = ConversionUtil.conversionAndVerification(request, DemoVO.class);
+    } catch(VerificationException e){
+        // 这个就是 验证失败的提示信息
+        String msg = e.getMessage();
+    }
+    
+    return "{\"msg\":\"hello login\"}";
+});
+```
+
 ### 创建拦截器
 
-创建一个普通的类，实现 MagicianInterceptor 接口即可
+跟路由一样，这种类也可以创建多个，根据你的需求 分开创建拦截器
 
-- 在类上面添加 @Interceptor(pattern = "*") 注解
-- pattern属性为拦截规则，全部拦截 配置 * 即可，否则的话，必须以 / 开头
+- 第一个参数为拦截规则，全部拦截 配置 * 即可，否则的话，必须以 / 开头
 - 如果拦截器顺利放行的话，返回SUCCESS就好了，如果不给通过，那么直接返回 错误提示信息（返回对象会自定转成json）
 
 ```java
-@Interceptor(pattern = "/demoController/*")
-public class DemoInter implements MagicianInterceptor {
+@Interceptor
+public class DemoInter implements MagicianInitInterceptor {
 
-    /**
-     * 接口执行之前
-     * @param magicianRequest
-     * @return
-     */
     @Override
-    public Object before(MagicianRequest magicianRequest) {
-        System.out.println(magicianRequest);
-        return SUCCESS;
+    public void initInterceptor(MagicianInterceptorCreate interceptorCreate) {
+
+        interceptorCreate.addInterceptor("/demo/*", new MagicianInterceptor() {
+            @Override
+            public Object before(MagicianRequest magicianRequest) {
+                System.out.println("进入了拦截器");
+                return SUCCESS;
+            }
+
+            @Override
+            public Object after(MagicianRequest magicianRequest, Object o) {
+                return SUCCESS;
+            }
+        });
+
+        interceptorCreate.addInterceptor("/*/form", new MagicianInterceptor() {
+            @Override
+            public Object before(MagicianRequest magicianRequest) {
+                System.out.println("进入了拦截器2");
+                return SUCCESS;
+            }
+
+            @Override
+            public Object after(MagicianRequest magicianRequest, Object o) {
+                return SUCCESS;
+            }
+        });
     }
 
-    /**
-     * 接口执行之后
-     * @param magicianRequest
-     * @param o 接口返回的数据
-     * @return
-     */
-    @Override
-    public Object after(MagicianRequest magicianRequest, Object o) {
-        System.out.println(o);
-        return SUCCESS;
-    }
 }
 ```
 
@@ -487,7 +564,8 @@ MagicianConfigure.load("https://www.test.com/application.properties", ReadMode.R
 String userName = Environment.get("userName");
 ```
 
-## 数据库操作
+## 更多功能
 
-[点击此处 -> 跳转到数据库操作](/db/index.md)
+- [点击此处 -> 跳转到数据库操作](/db/index.md)
+- [点击此处 -> 跳转到Magician-Web](magician-web.md)
 

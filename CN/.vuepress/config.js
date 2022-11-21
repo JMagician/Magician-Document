@@ -18,7 +18,8 @@ module.exports = {
             items: [
               { text: '区块链', link: '/chain/index.md' },
               { text: 'Magician', link: '/web/index.md' },
-              { text: 'Magician-JDBC', link: '/db/index.md' }
+              { text: 'Magician-JDBC', link: '/db/index.md' },
+              { text: 'Magician-Web', link: '/web/magician-web.md' }
             ]
           },
           { text: '赞助', link: '/sponsor/sponsor.md' }, 
