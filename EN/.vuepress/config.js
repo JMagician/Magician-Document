@@ -3,7 +3,8 @@ module.exports = {
   description: 'A Java development toolkit for most blockchain and web development scenarios',
   base: '/',
   head: [
-    ['script', {},
+    [
+      'script', {},
       `
       var _hmt = _hmt || [];
       (function() {

@@ -3,7 +3,8 @@ module.exports = {
   description: '一套Java开发的工具包，可以满足区块链 和 Web开发的大部分场景',
   base: '/cn/',
   head: [
-    ['script', {},
+    [
+      'script', {},
       `
       var _hmt = _hmt || [];
       (function() {
