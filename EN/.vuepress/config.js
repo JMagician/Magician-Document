@@ -2,6 +2,19 @@ module.exports = {
   title: 'Magician',
   description: 'A Java development toolkit for most blockchain and web development scenarios',
   base: '/',
+  head: [
+    ['script', {},
+      `
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?2f2aea23853de6fd598eb881c87e9b10";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+      `
+    ]
+  ],
   themeConfig: {
       nav: [
         { text: 'Home', link: '/' },
