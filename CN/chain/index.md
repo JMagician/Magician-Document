@@ -12,7 +12,7 @@ Magician-web3是一个区块链开发工具包。它由两个功能组成。一�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web3</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -49,7 +49,15 @@ public class EventDemo implements EthMonitorEvent {
                 .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // 筛选 toAddress 或 合约地址 收到的交易
                 .setMinValue(BigInteger.valueOf(1)) // 筛选发送的主链币数量 >= minValue 的交易
                 .setMaxValue(BigInteger.valueOf(10)) // 筛选发送的主链币数量 <= maxValue 的交易
-                .setFunctionCode("0xasdas123"); // 筛选调用合约内 某方法 的交易
+                .setInputDataFilter( // 根据inputData筛选
+                        InputDataFilter.create()
+                                .setFunctionCode(ERC20.TRANSFER.getFunctionCode()) // 函数签名（被调用的合约内的某方法）, 支持任意函数，这里的枚举只是一部分标准的合约函数
+                                .setTypeReferences( // 此方法的参数列表（仅类型）
+                                        new TypeReference<Address>(){},
+                                        new TypeReference<Uint256>(){}
+                                )
+                                .setValue("0x552115849813d334C58f2757037F68E2963C4c5e", null)// 筛选第几个参数 = 什么值
+                );
     }
 
     /**
@@ -66,6 +74,42 @@ public class EventDemo implements EthMonitorEvent {
 
         System.out.println(template);
     }
+}
+```
+
+#### InputDataFilter 详解
+
+如果你想监控，某合约内的某函数 被调用的交易
+
+```java
+public EthMonitorFilter ethMonitorFilter() {
+        return EthMonitorFilter.builder()
+                .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // 合约地址
+                .setInputDataFilter( // 根据inputData筛选
+                        InputDataFilter.create()
+                                .setFunctionCode("0xadasasdf") // 被调用的函数编码（inputData前十位）
+                );
+}
+```
+
+如果 有一个合约[0x552115849813d334C58f2757037F68E2963C4c5e], 里面有一个函数是 transferFrom(address from, address to, uint256 amount)
+
+你想 实现一个监控：如果有人用这个合约里的这个函数，将代币转给[0x552115849813d334C58f2757037F68E2963C4c5e]时，就触发 Monitor事件，那么你可以这样写
+
+```java
+public EthMonitorFilter ethMonitorFilter() {
+        return EthMonitorFilter.builder()
+                .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // 合约地址
+                .setInputDataFilter( // 根据inputData筛选
+                        InputDataFilter.create()
+                                .setFunctionCode(ERC20.TRANSFER_FROM.getFunctionCode()) // 被调用的函数编码（inputData前十位）
+                                .setTypeReferences( // 此方法的参数列表（仅类型）
+                                        new TypeReference<Address>(){}, // 第一个参数的类型
+                                        new TypeReference<Address>(){}, // 第二个参数的类型
+                                        new TypeReference<Uint256>(){} // 第三个参数的类型
+                                )
+                                .setValue(null, "0x552115849813d334C58f2757037F68E2963C4c5e", null)// 筛选第二个参数（to） = 0x552115849813d334C58f2757037F68E2963C4c5e
+                );
 }
 ```
 
@@ -86,8 +130,7 @@ EventThreadPool.init(1);
 MagicianBlockchainScan.create()
         .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/") // 节点的RPC地址
         .setChainType(ChainType.ETH) // 要扫描的链（如果设置成ETH，那么可以扫描BSC, POLYGAN 等其他任意 以太坊标准的链）
-        .setScanPeriod(5000) // 每轮扫描的间隔
-        .setScanSize(1000) // 每轮扫描的块数
+        .setScanPeriod(5000) // 间隔多久，扫描下一个区块
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
         .addEthMonitorEvent(new EventOne()) // 添加 监听事件
         .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
@@ -147,9 +190,9 @@ String privateKey = ""; // 私钥
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // 链的RPC地址
 
 // 这种方式是单例的
-EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j, privateKey);
+EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j);
 // 如果你想创建多个EthHelper对象，可以用这种方式
-EthHelper ethHelper = EthHelper.builder(web3j, privateKey);
+EthHelper ethHelper = EthHelper.builder(web3j);
 
 // 余额查询
 BigInteger balance = ethHelper.balanceOf(fromAddress);
@@ -157,6 +200,7 @@ BigInteger balance = ethHelper.balanceOf(fromAddress);
 // 转账
 TransactionReceipt transactionReceipt = ethHelper.transfer(
             toAddress,
+            privateKey, 
             BigDecimal.valueOf(1),
             Convert.Unit.ETHER
 );
@@ -203,9 +247,9 @@ String privateKey = ""; // 私钥
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // 链的RPC地址
 
 // 这种方式是单例的
-EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j, fromAddressPrivateKey);
+EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j);
 // 如果你想创建多个EthContract对象，可以用这种方式
-EthContract ethContract = EthContract.builder(web3j, privateKey);
+EthContract ethContract = EthContract.builder(web3j);
 
 
 EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
@@ -226,6 +270,7 @@ List<Type> result = ethContract.select(
 SendResultModel sendResultModel = ethContract.sendRawTransaction(
                     fromAddress, // 调用者的地址
                     contractAddress, // 合约地址
+                    privateKey, // fromAddress的私钥
                     new BigInteger("1200000"), // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
                     new BigInteger("800000"), // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
                     ethAbiCodec.getInputData(

@@ -12,7 +12,7 @@ He does not need to rely on Magician and can be used completely independently
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web3</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -49,7 +49,15 @@ public class EventDemo implements EthMonitorEvent {
                 .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // Filter toAddress or Contract Address Received Delivery易
                 .setMinValue(BigInteger.valueOf(1)) // Filter the transactions with the number of sent coins >= minValue
                 .setMaxValue(BigInteger.valueOf(10)) // Filter transactions with the number of sent coins <= maxValue
-                .setFunctionCode("0xasdas123"); // Filtering transactions that call a method in a contract
+                .setInputDataFilter( // Filter by inputData
+                        InputDataFilter.create()
+                                .setFunctionCode(ERC20.TRANSFER.getFunctionCode()) // function signature (a method within the contract being called), supports arbitrary functions, the enumeration here is just a part of the standard contract functions
+                                .setTypeReferences( // List of parameters for this function (type only)
+                                        new TypeReference<Address>(){},
+                                        new TypeReference<Uint256>(){}
+                                )
+                                .setValue("0x552115849813d334C58f2757037F68E2963C4c5e", null)// Filter by the value of the parameter
+                );
     }
 
     /**
@@ -66,6 +74,42 @@ public class EventDemo implements EthMonitorEvent {
 
         System.out.println(template);
     }
+}
+```
+
+#### Input Data Filters Explained
+
+If you want to trigger the monitor when a function in a contract is called
+
+```java
+public EthMonitorFilter ethMonitorFilter() {
+        return EthMonitorFilter.builder()
+                .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // Contract Address
+                .setInputDataFilter( // Filter by input data
+                        InputDataFilter.create()
+                                .setFunctionCode("0xadasasdf") // Called function code (first ten bits of inputData)
+                );
+}
+```
+
+If there is a contract [0x552115849813d334C58f2757037F68E2963C4c5e], with a function transferFrom(address from, address to, uint256 amount)
+
+You want to implement a monitor: if someone uses this function in this contract to transfer tokens to [0x552115849813d334C58f2757037F68E2963C4c5e], it will trigger the Monitor event, then you can write it like this
+
+```java
+public EthMonitorFilter ethMonitorFilter() {
+        return EthMonitorFilter.builder()
+                .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // Contract Address
+                .setInputDataFilter( // Filter by input data
+                        InputDataFilter.create()
+                                .setFunctionCode(ERC20.TRANSFER_FROM.getFunctionCode()) // Called function code (first ten bits of inputData)
+                                .setTypeReferences( // List of parameters for this function (type only)
+                                        new TypeReference<Address>(){}, // Type of the first parameter
+                                        new TypeReference<Address>(){}, // Type of the second parameter
+                                        new TypeReference<Uint256>(){} // Type of the third parameter
+                                )
+                                .setValue(null, "0x552115849813d334C58f2757037F68E2963C4c5e", null)// filter the second parameter (to) = 0x552115849813d334C58f2757037F68E2963C4c5e
+                );
 }
 ```
 
@@ -88,7 +132,6 @@ MagicianBlockchainScan.create()
         .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/") // RPC address of the node
         .setChainType(ChainType.ETH) // Chain to be scanned (if set to ETH, then any other Ethernet standard chain such as BSC, POLYGAN, etc. can be scanned)
         .setScanPeriod(5000) // Interval of each round of scanning
-        .setScanSize(1000) // Number of blocks scanned per round
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
         .addEthMonitorEvent(new EventOne()) // Add Listening Events
         .addEthMonitorEvent(new EventTwo()) // Add Listening Events
@@ -148,9 +191,9 @@ String privateKey = ""; // Private key
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
 
 // This approach is a single instance of
-EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j, privateKey);
+EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j);
 // If you want to create multiple EthHelper objects, you can do so in this way
-EthHelper ethHelper = EthHelper.builder(web3j, privateKey);
+EthHelper ethHelper = EthHelper.builder(web3j);
 
 // Balance Query
 BigInteger balance = ethHelper.balanceOf(fromAddress);
@@ -158,6 +201,7 @@ BigInteger balance = ethHelper.balanceOf(fromAddress);
 // transfer
 TransactionReceipt transactionReceipt = ethHelper.transfer(
             toAddress, // Recipient's address
+            privateKey, 
             BigDecimal.valueOf(1), // Sending quantity
             Convert.Unit.ETHER // Units of quantity
 );
@@ -205,9 +249,9 @@ String privateKey = ""; // Private key
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
 
 // This approach is a single instance of
-EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j, fromAddressPrivateKey);
+EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j);
 // If you want to create multiple EthContract objects, you can do so in this way
-EthContract ethContract = EthContract.builder(web3j, privateKey);
+EthContract ethContract = EthContract.builder(web3j);
 
 
 EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
@@ -228,6 +272,7 @@ List<Type> result = ethContract.select(
 SendResultModel sendResultModel = ethContract.sendRawTransaction(
                     fromAddress, // Address of the caller
                     contractAddress, // Contract Address
+                    privateKey, // Private key of fromAddress
                     new BigInteger("1200000"), // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
                     new BigInteger("800000"), // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
                     ethAbiCodec.getInputData(
