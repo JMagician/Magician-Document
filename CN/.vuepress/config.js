@@ -3,6 +3,7 @@ module.exports = {
   description: '一套Java开发的工具包，可以满足区块链 和 Web开发的大部分场景',
   base: '/cn/',
   head: [
+    ['meta', { name: 'keywords', content: 'Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,Web' }],
     [
       'script', {},
       `

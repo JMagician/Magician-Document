@@ -3,6 +3,7 @@ module.exports = {
   description: 'A Java development toolkit for most blockchain and web development scenarios',
   base: '/',
   head: [
+    ['meta', { name: 'keywords', content: 'Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,Web' }],
     [
       'script', {},
       `
