@@ -180,7 +180,7 @@ EthRpcInit.create()
         )
 ```
 
-#### SOL, TRON 链的扫块正在开发中......
+#### SOL, TRON
 
 ```java
 开发中......
@@ -223,8 +223,8 @@ public class EthRetry implements RetryStrategy {
 #### 将重试策略添加到扫描任务中
 ```java
 MagicianBlockchainScan.create()
-                .setRetryStrategy(new EthRetry())// 调用这个方法添加
-                .start();
+        .setRetryStrategy(new EthRetry())// 调用这个方法添加
+        .start();
 ```
 
 #### 需要注意线程数量的配置

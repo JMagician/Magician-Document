@@ -145,6 +145,8 @@ MagicianBlockchainScan.create()
 
 ### Using a proxy to access RPC addresses
 
+#### ETH(BSC, Poygan, etc.)
+
 ```java
 // Use another overload of the setRpcUrl method and just pass in the proxy settings
 EthRpcInit.create()
@@ -179,7 +181,7 @@ EthRpcInit.create()
         )
 ```
 
-#### SOL, TRON Chain's Scan Block High feature under development......
+#### SOL, TRON
 
 ```java
 Under Development......
