@@ -12,7 +12,7 @@ He does not need to rely on Magician and can be used completely independently
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web3</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.5</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -50,7 +50,7 @@ public class EventDemo implements EthMonitorEvent {
                 .setMinValue(BigInteger.valueOf(1)) // Filter the transactions with the number of sent coins >= minValue
                 .setMaxValue(BigInteger.valueOf(10)) // Filter transactions with the number of sent coins <= maxValue
                 .setInputDataFilter( // Filter by inputData
-                        InputDataFilter.create()
+                        InputDataFilter.builder()
                                 .setFunctionCode(ERC20.TRANSFER.getFunctionCode()) // function signature (a method within the contract being called), supports arbitrary functions, the enumeration here is just a part of the standard contract functions
                                 .setTypeReferences( // List of parameters for this function (type only)
                                         new TypeReference<Address>(){},
@@ -86,7 +86,7 @@ public EthMonitorFilter ethMonitorFilter() {
         return EthMonitorFilter.builder()
                 .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // Contract Address
                 .setInputDataFilter( // Filter by input data
-                        InputDataFilter.create()
+                        InputDataFilter.builder()
                                 .setFunctionCode("0xadasasdf") // Called function code (first ten bits of inputData)
                 );
 }
@@ -101,7 +101,7 @@ public EthMonitorFilter ethMonitorFilter() {
         return EthMonitorFilter.builder()
                 .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // Contract Address
                 .setInputDataFilter( // Filter by input data
-                        InputDataFilter.create()
+                        InputDataFilter.builder()
                                 .setFunctionCode(ERC20.TRANSFER_FROM.getFunctionCode()) // Called function code (first ten bits of inputData)
                                 .setTypeReferences( // List of parameters for this function (type only)
                                         new TypeReference<Address>(){}, // Type of the first parameter
@@ -123,14 +123,16 @@ Under Development......
 
 ```java
 
-// Initialize the thread pool, the number of core threads must be >= the number of chains you want to scan, it is recommended to equal the number of chains to be scanned
+// Initialize the thread pool, the number of core threads must be >= the number of chains you want to scan + retry strategy
 EventThreadPool.init(1);
 
 // Open a scan task, if you want to scan multiple chains, you can open multiple tasks, 
 // by copying the following code and modifying the corresponding configuration you can open a new task
 MagicianBlockchainScan.create()
-        .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/") // RPC address of the node
-        .setChainType(ChainType.ETH) // Chain to be scanned (if set to ETH, then any other Ethernet standard chain such as BSC, POLYGAN, etc. can be scanned)
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // RPC address of the node
         .setScanPeriod(5000) // Interval of each round of scanning
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
         .addEthMonitorEvent(new EventOne()) // Add Listening Events
@@ -145,39 +147,91 @@ MagicianBlockchainScan.create()
 
 ```java
 // Use another overload of the setRpcUrl method and just pass in the proxy settings
-MagicianBlockchainScan.create()
-        .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
-                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780))) 
-        .start();
+EthRpcInit.create()
+        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)))
 
 // ---------- In addition to the above, there are several overloads for the setRpcUrl method, so pick the right one according to your needs ----------
 
 // Pass directly into wei3j's HttpService
 // This method is the most customizable and is basically the way web3j is supposed to be used
-MagicianBlockchainScan.create()
-        .setRpcUrl(new HttpService("")) 
-        .start();
+EthRpcInit.create()
+        .addRpcUrl(new HttpService(""))
 
 // Pass in okHttpClient
 // This method is also very customizable and basically uses okHttp to access the blockchain node
 OkHttpClient okHttpClient = xxxxxx;
-MagicianBlockchainScan.create()
-        .setRpcUrl(okHttpClient) 
-        .start();
+EthRpcInit.create()
+        .addRpcUrl(okHttpClient)
 
 // Some proxies require authentication, so you can use this to set the username and password
-MagicianBlockchainScan.create()
-                    .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
-                            new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
-                            (Route route, Response response) -> {
+EthRpcInit.create()
+        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
+                (Route route, Response response) -> {
 
-                                // Set the proxy server account password
-                                String credential = Credentials.basic("username", "password");
-                                return response.request().newBuilder()
-                                        .header("Proxy-Authorization", credential)
-                                        .build();
-                            }
-                    )
+                //设置代理服务器账号密码
+                String credential = Credentials.basic("用户名", "密码");
+                return response.request().newBuilder()
+                        .header("Proxy-Authorization", credential)
+                        .build();
+                }
+        )
+```
+
+#### SOL, TRON Chain's Scan Block High feature under development......
+
+```java
+Under Development......
+```
+
+### Configuring multiple RPC URLs to achieve load balancing
+
+Call the addRpcUrl method several times and pass in multiple RPC URLs to achieve load balancing (polling)
+
+```java
+MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+                        .addRpcUrl("https://data-seed-prebsc-2-s1.binance.org:8545")
+                        .addRpcUrl("https://data-seed-prebsc-1-s2.binance.org:8545")
+        )
+```
+
+### Retry Strategy
+
+Retries will occur when the following two conditions are met, both of which must be met
+1. the block height currently being scanned is empty (the block does not exist or there are no transactions in the block)
+2. The current block height being scanned is < the latest block height on the chain
+
+When the above two conditions are met, the scan task will skip the block and continue scanning the next block, and the retry strategy will receive the skipped block height.
+You can handle this yourself in the retry strategy
+
+#### Create a retry strategy
+```java
+public class EthRetry implements RetryStrategy {
+
+    @Override
+    public void retry(BigInteger blockNumber) {
+        
+    }
+}
+```
+
+#### Add a retry strategy to the scan task
+```java
+MagicianBlockchainScan.create()
+                .setRetryStrategy(new EthRetry())// Call this method to add
+                .start();
+```
+
+#### needs to pay attention to the configuration of the number of threads
+
+If you have a scan task + a retry strategy, then two threads are needed, so the parameter must be 2
+
+```java
+EventThreadPool.init(2);
 ```
 
 ## Web3j Extensions

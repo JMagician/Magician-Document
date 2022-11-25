@@ -12,7 +12,7 @@ Magician-web3是一个区块链开发工具包。它由两个功能组成。一�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Web3</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.5</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -50,7 +50,7 @@ public class EventDemo implements EthMonitorEvent {
                 .setMinValue(BigInteger.valueOf(1)) // 筛选发送的主链币数量 >= minValue 的交易
                 .setMaxValue(BigInteger.valueOf(10)) // 筛选发送的主链币数量 <= maxValue 的交易
                 .setInputDataFilter( // 根据inputData筛选
-                        InputDataFilter.create()
+                        InputDataFilter.builder()
                                 .setFunctionCode(ERC20.TRANSFER.getFunctionCode()) // 函数签名（被调用的合约内的某方法）, 支持任意函数，这里的枚举只是一部分标准的合约函数
                                 .setTypeReferences( // 此方法的参数列表（仅类型）
                                         new TypeReference<Address>(){},
@@ -86,7 +86,7 @@ public EthMonitorFilter ethMonitorFilter() {
         return EthMonitorFilter.builder()
                 .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // 合约地址
                 .setInputDataFilter( // 根据inputData筛选
-                        InputDataFilter.create()
+                        InputDataFilter.builder()
                                 .setFunctionCode("0xadasasdf") // 被调用的函数编码（inputData前十位）
                 );
 }
@@ -101,7 +101,7 @@ public EthMonitorFilter ethMonitorFilter() {
         return EthMonitorFilter.builder()
                 .setToAddress("0x552115849813d334C58f2757037F68E2963C4c5e") // 合约地址
                 .setInputDataFilter( // 根据inputData筛选
-                        InputDataFilter.create()
+                        InputDataFilter.builder()
                                 .setFunctionCode(ERC20.TRANSFER_FROM.getFunctionCode()) // 被调用的函数编码（inputData前十位）
                                 .setTypeReferences( // 此方法的参数列表（仅类型）
                                         new TypeReference<Address>(){}, // 第一个参数的类型
@@ -123,13 +123,15 @@ public EthMonitorFilter ethMonitorFilter() {
 
 ```java
 
-// 初始化线程池，核心线程数必须 >= 扫块的任务数量，建议等于扫块的任务数量
+// 初始化线程池，核心线程数必须 >= 扫块的任务数量 + 重试策略的数量
 EventThreadPool.init(1);
 
 // 开启一个扫块任务，如果你想扫描多个链，那么直接拷贝这段代码，并修改配置即可
 MagicianBlockchainScan.create()
-        .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/") // 节点的RPC地址
-        .setChainType(ChainType.ETH) // 要扫描的链（如果设置成ETH，那么可以扫描BSC, POLYGAN 等其他任意 以太坊标准的链）
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // 节点的RPC地址
         .setScanPeriod(5000) // 间隔多久，扫描下一个区块
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
         .addEthMonitorEvent(new EventOne()) // 添加 监听事件
@@ -142,41 +144,96 @@ MagicianBlockchainScan.create()
 
 ### 使用代理访问RPC地址
 
-```java
-// 使用 setRpcUrl 方法的另一个重载，传入代理设置即可
-MagicianBlockchainScan.create()
-        .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
-                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780))) 
-        .start();
+#### ETH(BSC,PLOYGON 等) 链的设置方法
 
-// ---------- 除了上面那种以外，setRpcUrl 方法一共有这么几种重载，根据你的需求挑选合适的方法 ----------
+```java
+// 使用 addRpcUrl 方法的另一个重载，传入代理设置即可
+EthRpcInit.create()
+        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)))
+
+// ---------- 除了上面那种以外，addRpcUrl 方法一共有这么几种重载，根据你的需求挑选合适的方法 ----------
 
 // 直接传入 wei3j的HttpService
 // 这种方法 可定制化最高，基本上就是web3j本来的使用方式
-MagicianBlockchainScan.create()
-        .setRpcUrl(new HttpService("")) 
-        .start();
+EthRpcInit.create()
+        .addRpcUrl(new HttpService(""))
 
 // 传入okHttpClient
 // 这种方法 可定制化程度也非常高，基本上就是使用okHttp访问 区块链节点了
 OkHttpClient okHttpClient = xxxxxx;
-MagicianBlockchainScan.create()
-        .setRpcUrl(okHttpClient) 
-        .start();
+EthRpcInit.create()
+        .addRpcUrl(okHttpClient)
 
 // 有些代理服务器 需要鉴权，可以使用这种方式来设置用户名和密码
-MagicianBlockchainScan.create()
-                    .setRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
-                            new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
-                            (Route route, Response response) -> {
+EthRpcInit.create()
+        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545/",
+                new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
+                (Route route, Response response) -> {
 
-                                //设置代理服务器账号密码
-                                String credential = Credentials.basic("用户名", "密码");
-                                return response.request().newBuilder()
-                                        .header("Proxy-Authorization", credential)
-                                        .build();
-                            }
-                    )
+                //设置代理服务器账号密码
+                String credential = Credentials.basic("用户名", "密码");
+                return response.request().newBuilder()
+                        .header("Proxy-Authorization", credential)
+                        .build();
+                }
+        )
+```
+
+#### SOL, TRON 链的扫块正在开发中......
+
+```java
+开发中......
+```
+
+### 配置多个RPC URL 实现负载均衡
+
+调用addRpcUrl方法多次，传入多个RPC URL，即可实现负载均衡（轮询）
+
+```java
+MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+                        .addRpcUrl("https://data-seed-prebsc-2-s1.binance.org:8545")
+                        .addRpcUrl("https://data-seed-prebsc-1-s2.binance.org:8545")
+        ) // 节点的RPC地址
+```
+
+### 重试策略
+
+在符合以下两个条件时，会发生重试，两个条件必须全都符合 才会触发重试
+1. 当前正在扫描的块高 是空的（块不存在 或者 块里面没交易）
+2. 当前正在扫描的块高 < 链上的最新块高
+
+当上面两个条件同时符合的时候，扫描任务会跳过这个块，然后继续扫描下一个块，同时 重试策略会收到被跳过的块高，
+你可以在重试策略里 自己处理
+
+#### 创建一个重试策略
+```java
+public class EthRetry implements RetryStrategy {
+
+    @Override
+    public void retry(BigInteger blockNumber) {
+        
+    }
+}
+```
+
+#### 将重试策略添加到扫描任务中
+```java
+MagicianBlockchainScan.create()
+                .setRetryStrategy(new EthRetry())// 调用这个方法添加
+                .start();
+```
+
+#### 需要注意线程数量的配置
+
+如果你此时开了一个扫块任务 + 一个 重试策略，那么需要占用两个线程，所以参数必须传2
+
+```java
+// 初始化线程池，核心线程数必须 >= 扫块的任务数量 + 重试策略的数量
+EventThreadPool.init(2);
 ```
 
 ## Web3j 扩展
