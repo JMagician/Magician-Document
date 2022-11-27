@@ -22,7 +22,7 @@ module.exports = {
         { text: 'Home', link: '/' },
         { text: 'Github',
           items: [
-            { text: 'Block Chain', link: 'https://github.com/Magician-blockchain'},
+            { text: 'Block Chain', link: 'https://github.com/Magician-Blockchain'},
             { text: 'Web', link: 'https://github.com/JMagician'}
           ]
         },              
