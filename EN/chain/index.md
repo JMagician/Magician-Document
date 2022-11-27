@@ -376,6 +376,13 @@ Currently there are only three templates, and they will continue to be added lat
 Read
 
 ```java
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
+
+String contractAddress = "";
+
+ERC20Contract erc20Contract = ERC20Contract.builder(web3j, contractAddress);
+
+
 // Call the totalSupply function of the contract
 BigInteger total = erc20Contract.totalSupply();
 
@@ -389,6 +396,12 @@ BigInteger amount = erc20Contract.allowance("0xb4e32492E9725c3215F1662Cf28Db1862
 Write
 
 ```java
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
+
+String contractAddress = "";
+
+ERC20Contract erc20Contract = ERC20Contract.builder(web3j, contractAddress);
+
 // Call the transfer function of the contract
 SendResultModel sendResultModel = erc20Contract.transfer(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
@@ -432,6 +445,12 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 Read
 
 ```java
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
+
+String contractAddress = "";
+
+ERC721Contract erc721Contract = ERC721Contract.builder(web3j, contractAddress);
+
 // Call the balanceOf function of the contract
 BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
 
@@ -448,6 +467,12 @@ String approvedAddress = erc721Contract.getApproved(new BigInteger("1002"));
 Write
 
 ```java
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
+
+String contractAddress = "";
+
+ERC721Contract erc721Contract = ERC721Contract.builder(web3j, contractAddress);
+
 // Call the approve function of the contract
 SendResultModel sendResultModel = erc721Contract.approve(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
@@ -518,6 +543,13 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 Read
 
 ```java
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
+
+String contractAddress = "";
+
+ERC1155Contract erc1155Contract = ERC1155Contract.builder(web3j, contractAddress);
+
+
 // Call the balanceOf function of the contract
 BigInteger amount = erc1155Contract.balanceOf("0x552115849813d334C58f2757037F68E2963C4c5e", new BigInteger("0"));
 
@@ -539,6 +571,13 @@ Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28
 Write
 
 ```java
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
+
+String contractAddress = "";
+
+ERC1155Contract erc1155Contract = ERC1155Contract.builder(web3j, contractAddress);
+
+
 // Call the setApprovalForAll function of the contract
 SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
