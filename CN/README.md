@@ -36,9 +36,21 @@ footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail123
 <h2 style="margin:0px;">区块链开发</h2>
 <div class="features" style="border:0px;margin-top:0px;padding-top:0px;">
   <div class="feature">
-    <h2>Magician-Web3</h2>
+    <h2>Magician-Scanning</h2>
     <p>
-      Magician-Web3是一个区块链开发工具包。它由两个功能组成。一个是扫描区块链，根据开发者的需要监控交易。另一个是对web3j的一些二次打包，可以减少开发者在一些常见场景下的工作量。它计划支持三种链，ETH（BSC、POLYGAN等）、SOL和TRON
+      Magician-Scanning是一个用Java开发的扫描区块链的工具包，它可以根据开发者的需求来监控交易，它计划支持三个链，ETH（BSC、POLYGON等）、SOL和TRON。
+    </p>
+  </div>
+  <div class="feature">
+    <h2>Magician-ContractsTools</h2>
+    <p>
+      Magician-ContractsTools是一个用于调用智能合约的工具包，你可以非常容易地在Java程序中调用智能合约进行查询和写入操作。
+    </p>
+  </div>
+  <div class="feature">
+    <h2>&nbsp;</h2>
+    <p>
+      &nbsp;
     </p>
   </div>
 </div>

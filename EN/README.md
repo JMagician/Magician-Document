@@ -46,10 +46,21 @@ footer: MIT protocol based open source projects | Email - yuyemail123@gmail.com
 <h2 style="margin:0px;">Blockchain development components</h2>
 <div class="features" style="border:0px;margin-top:0px;padding-top:0px;">
   <div class="feature">
-    <h2>Magician-Web3</h2>
-    <p>Magician-Web3 is a blockchain development toolkit. It consists of two functions. One is to scan the
-      blockchain and monitor the transactions according to the developer's needs. The other is some secondary
-      packaging of web3j, which can reduce the workload of developers in some common scenarios. It is planned to
-      support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON</p>
+    <h2>Magician-Scanning</h2>
+    <p>
+      Magician-Scanning is a toolkit developed in Java for scanning blockchains, which can be used to monitor transactions according to the needs of developers, and it plans to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
+    </p>
+  </div>
+  <div class="feature">
+    <h2>Magician-ContractsTools</h2>
+    <p>
+      Magician-ContractsTools is a toolkit for calling smart contracts , you can very easily call smart contracts in Java programs for query and write operations
+    </p>
+  </div>
+  <div class="feature">
+    <h2>&nbsp;</h2>
+    <p>
+      &nbsp;
+    </p>
   </div>
 </div>

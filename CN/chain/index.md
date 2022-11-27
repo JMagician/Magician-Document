@@ -1,6 +1,7 @@
-# Magician-Web3
+# Magician-Blockchain
 
-Magician-Web3是一个用Java开发的扫描区块链的工具包，当我们在程序中需要一些功能时，它可以派上用场，比如说。
+## Magician-Scanning
+Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我们在程序中需要一些功能时，它可以派上用场，比如说。
 
 - 当一个地址收到ETH时，程序中的一个方法会被自动触发，这个交易会被传入该方法。
 
@@ -10,17 +11,13 @@ Magician-Web3是一个用Java开发的扫描区块链的工具包，当我们在
 
 它计划支持三种链，ETH（BSC，POLYGON等），SOL和TRON
 
-此外，还为Web3j做了一些二次打包，以减少开发者在某些场景下的工作负担
-
-## 初始化配置
-
 ### 导入依赖
 
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-Web3</artifactId>
-    <version>1.0.5</version>
+    <artifactId>Magician-Scanning</artifactId>
+    <version>1.0.6</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -30,8 +27,6 @@ Magician-Web3是一个用Java开发的扫描区块链的工具包，当我们在
     <version>1.7.12</version>
 </dependency>
 ```
-
-## 扫块，监听交易事件
 
 ### 创建一个监听器
 
@@ -244,9 +239,382 @@ MagicianBlockchainScan.create()
 EventThreadPool.init(2);
 ```
 
-## Web3j 扩展
+### InputData 编解码
 
-在Web3j 的基础上进行了二次封装，扩展了几个基础的方法，可以在一定程度上减轻开发者的工作量
+```java
+// 编码
+String inputData = EthAbiCodec.getInputData(
+            "transfer", // 方法名
+            new Address(toAddress), // 参数1
+            new Uint256(new BigInteger("1000000000000000000")) // 参数2，如果还有其他参数，可以继续传入下一个
+    );
+
+// 解码
+List<Type> result = EthAbiCodec.decoderInputData(
+            "0x" + inputData.substring(10), // 去除方法签名的inputData
+            new TypeReference<Address>() {}, // 被编码的方法的参数1 类型
+            new TypeReference<Uint256>() {} // 被编码的方法的参数2 类型， 如果还有其他参数，可以继续传入下一个
+    );
+
+for(Type type : result){
+    System.out.println(type.getValue());
+}
+
+// 获取方法签名，其实就是inputData的前十位
+String functionCode = EthAbiCodec.getFunAbiCode(
+            "transfer", // 方法名
+            new Address(toAddress), // 参数1，值随意传，反正我们要的方法签名，不是完整的inputData
+            new Uint256(new BigInteger("1000000000000000000")) // 参数2，值随意传，反正我们要的方法签名，不是完整的inputData，如果还有其他参数，可以继续传入下一个
+    );
+```
+
+### 项目内置了几个functionCode
+
+如果你刚好要监听这几个函数，那么可以直接用，前提是你的合约里的函数必须跟 Openzeppelin 的规范一样，连参数列表的顺序都必须一样
+
+#### ERC20
+
+```java
+ERC20.TRANSFER.getFunctionCode();
+ERC20.APPROVE.getFunctionCode();
+ERC20.TRANSFER_FROM.getFunctionCode();
+```
+
+#### ERC721
+
+```java
+ERC721.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC721.SAFE_TRANSFER_FROM_TWO.getFunctionCode(); // 没有data的那个
+ERC721.TRANSFER_FROM.getFunctionCode();
+ERC721.APPROVE.getFunctionCode();
+ERC721.SET_APPROVAL_FOR_ALL.getFunctionCode();
+```
+
+#### ERC1155
+
+```java
+ERC1155.SET_APPROVAL_FOR_ALL.getFunctionCode();
+ERC1155.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC1155.SAFE_BATCH_TRANSFER_FROM.getFunctionCode();
+```
+
+## Magician-ContractsTools
+
+Magician-ContractsTools是一个用于调用智能合约的工具包，你可以非常容易地在Java程序中调用智能合约进行查询和写入操作。
+
+有三个内置的标准合约模板，分别是ERC20、ERC721和ERC1155，如果你需要调用这三个合约中的标准函数，可以帮助你非常快速地完成工作。除了内置的合同模板外，如果你需要调用自定义的合同函数也是很容易的，以后我们还会继续增加标准模板。
+
+此外，还有InputData解码和ETH查询和转移的工具
+
+计划支持三种链，ETH（BSC、POLYGON等）、SOL和TRON
+
+### 导入依赖
+
+```xml
+<dependency>
+    <groupId>com.github.yuyenews</groupId>
+    <artifactId>Magician-ContractsTools</artifactId>
+    <version>1.0.0</version>
+</dependency>
+
+<!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <version>1.7.12</version>
+</dependency>
+```
+
+### 合约查询 以及 写入
+
+```java
+String privateKey = ""; // 私钥
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // 链的RPC地址
+String contractAddress = "";
+
+EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
+
+// 查询
+List<Type> result = ethContractUtil.select(
+            contractAddress, // 合约地址
+            EthAbiCodecTool.getInputData(
+                    "balanceOf", // 要调用的方法名称
+                    new Address(toAddress) // 方法的参数，如果有多个，可以继续传入下一个参数
+            ),  // 要调用的方法的inputData
+            new TypeReference<Uint256>() {} // 方法的返回类型，如果有多个返回值，可以继续传入下一个参数
+        );
+
+// 往合约里写入数据
+// gasPrice，gasLimit 两个参数，如果想用默认值可以不传，或者传null
+// 如果不传的话，两个参数都必须不传，要传就一起传， 如果设置为null的话，可以一个为null，一个有值
+SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
+                    senderAddress, // 调用者的地址
+                    contractAddress, // 合约地址
+                    privateKey, // senderAddress的私钥
+                    new BigInteger("1200000"), // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                    new BigInteger("800000"), // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
+                    EthAbiCodecTool.getInputData(
+                            "transfer", // 要调用的方法名称
+                            new Address(toAddress), // 方法的参数，如果有多个，可以继续传入下一个参数
+                            new Uint256(new BigInteger("1000000000000000000")) // 方法的参数，如果有多个，可以继续传入下一个参数
+                    ) // 要调用的方法的inputData
+            );
+
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+```
+
+### 合约模板
+
+目前只有三种模板，后面会继续增加
+
+#### 调用ERC20合约
+
+查询
+
+```java
+// 调用合约的 totalSupply 函数
+BigInteger total = erc20Contract.totalSupply();
+
+// 调用合约的 balanceOf 函数
+BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
+
+// 调用合约的 allowance 函数
+BigInteger amount = erc20Contract.allowance("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", "0x552115849813d334C58f2757037F68E2963C4c5e");
+```
+
+写入
+
+```java
+// 调用合约的 transfer 函数
+SendResultModel sendResultModel = erc20Contract.transfer(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                new BigInteger("1000000000000000000"), // 转账金额
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用合约的 transferFrom 函数
+SendResultModel sendResultModel = erc20Contract.transferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                new BigInteger("1000000000000000000"), // 转账金额
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用合约的 approve 函数
+SendResultModel sendResultModel = erc20Contract.approve(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
+                new BigInteger("1000000000000000000"), // 授权金额
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+```
+
+#### 调用ERC721合约
+
+查询
+
+```java
+// 调用合约的 balanceOf 函数
+BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
+
+// 调用合约的 ownerOf 函数
+String ownerAddress = erc721Contract.ownerOf(new BigInteger("1002"));
+
+// 调用 isApprovedForAll 函数
+Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", "0x552115849813d334C58f2757037F68E2963C4c5e");
+
+// 调用 getApproved 函数
+String approvedAddress = erc721Contract.getApproved(new BigInteger("1002"));
+```
+
+写入
+
+```java
+// 调用 approve 函数
+SendResultModel sendResultModel = erc721Contract.approve(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
+                new BigInteger("1002"), // 授权的tokenId
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用合约的 transferFrom 函数
+SendResultModel sendResultModel = erc20Contract.transferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                new BigInteger("1002"), // tokenId
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用合约的 safeTransferFrom 函数(没有data参数的那个)
+SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                new BigInteger("1002"), // tokenId
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用合约的 safeTransferFrom 函数(有data参数的那个)
+SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                new BigInteger("1002"), // tokenId
+                new byte[0], // data
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用 setApprovalForAll 函数
+SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
+                true, // 是否授权全部
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+```
+
+#### 调用ERC1155合约
+
+查询
+
+```java
+// 调用 balanceOf 函数
+BigInteger amount = erc1155Contract.balanceOf("0x552115849813d334C58f2757037F68E2963C4c5e", new BigInteger("0"));
+
+// 调用 balanceOfBatch 函数
+List<String> address = new ArrayList<>();
+address.add("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
+address.add("0x552115849813d334C58f2757037F68E2963C4c5e");
+
+List<BigInteger> tokenId = new ArrayList<>();
+tokenId.add(new BigInteger("0"));
+tokenId.add(new BigInteger("0"));
+
+List<BigInteger> amounts = erc1155Contract.balanceOfBatch(address, tokenId);
+
+// 调用 isApprovedForAll 函数
+Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", "0x552115849813d334C58f2757037F68E2963C4c5e");
+```
+
+写入
+
+```java
+// 调用 setApprovalForAll 函数
+SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
+                true, // 是否授权全部
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用 safeTransferFrom 函数
+SendResultModel sendResultModel = erc1155Contract.safeTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                new BigInteger("1002"), // tokenId
+                new BigInteger("1"), // 数量
+                new byte[0], // data
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+
+// 调用 safeBatchTransferFrom 函数
+List<BigInteger> tokenIds = new ArrayList<>();
+tokenIds.add(new BigInteger("1002"));
+tokenIds.add(new BigInteger("1003"));
+
+List<BigInteger> amounts = new ArrayList<>();
+amounts.add(new BigInteger("1"));
+amounts.add(new BigInteger("10"));
+
+SendResultModel sendResultModel = erc1155Contract.safeBatchTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
+                tokenIds, // tokenId 集合
+                amounts, // 数量 集合
+                new byte[0], // data
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
+                "", // 调用者的私钥
+                null, // gasPrice，如果传null，自动使用默认值
+                null // gasLimit，如果传null，自动使用默认值
+        );
+sendResultModel.getEthSendTransaction(); // 发送交易后的结果
+sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
+```
+
+### InputData 编解码
+
+```java
+// 编码
+String inputData = EthAbiCodecTool.getInputData(
+            "transfer", // 方法名
+            new Address(toAddress), // 参数1
+            new Uint256(new BigInteger("1000000000000000000")) // 参数2，如果还有其他参数，可以继续传入下一个
+    );
+
+// 解码
+List<Type> result = EthAbiCodecTool.decoderInputData(
+            "0x" + inputData.substring(10), // 去除方法签名的inputData
+            new TypeReference<Address>() {}, // 被编码的方法的参数1 类型
+            new TypeReference<Uint256>() {} // 被编码的方法的参数2 类型， 如果还有其他参数，可以继续传入下一个
+    );
+
+for(Type type : result){
+    System.out.println(type.getValue());
+}
+
+// 获取方法签名，其实就是inputData的前十位
+String functionCode = EthAbiCodecTool.getFunAbiCode(
+            "transfer", // 方法名
+            new Address(toAddress), // 参数1，值随意传，反正我们要的方法签名，不是完整的inputData
+            new Uint256(new BigInteger("1000000000000000000")) // 参数2，值随意传，反正我们要的方法签名，不是完整的inputData，如果还有其他参数，可以继续传入下一个
+    );
+```
 
 ### 主链币查询以及转账
 
@@ -269,112 +637,4 @@ TransactionReceipt transactionReceipt = ethHelper.transfer(
             BigDecimal.valueOf(1),
             Convert.Unit.ETHER
 );
-```
-
-### InputData 编解码
-
-```java
-// 这种方式是单例的
-EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
-// 如果你想创建多个EthAbiCodec对象，可以直接new
-EthAbiCodec ethAbiCodec = new EthAbiCodec();
-
-// 编码
-String inputData = ethAbiCodec.getInputData(
-            "transfer", // 方法名
-            new Address(toAddress), // 参数1
-            new Uint256(new BigInteger("1000000000000000000")) // 参数2，如果还有其他参数，可以继续传入下一个
-    );
-
-// 解码
-List<Type> result = ethAbiCodec.decoderInputData(
-            "0x" + inputData.substring(10), // 去除方法签名的inputData
-            new TypeReference<Address>() {}, // 被编码的方法的参数1 类型
-            new TypeReference<Uint256>() {} // 被编码的方法的参数2 类型， 如果还有其他参数，可以继续传入下一个
-    );
-
-for(Type type : result){
-    System.out.println(type.getValue());
-}
-
-// 获取方法签名，其实就是inputData的前十位
-String functionCode = ethAbiCodec.getFunAbiCode(
-            "transfer", // 方法名
-            new Address(toAddress), // 参数1，值随意传，反正我们要的方法签名，不是完整的inputData
-            new Uint256(new BigInteger("1000000000000000000")) // 参数2，值随意传，反正我们要的方法签名，不是完整的inputData，如果还有其他参数，可以继续传入下一个
-    );
-```
-
-### 合约查询 以及 写入
-
-```java
-String privateKey = ""; // 私钥
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // 链的RPC地址
-
-// 这种方式是单例的
-EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j);
-// 如果你想创建多个EthContract对象，可以用这种方式
-EthContract ethContract = EthContract.builder(web3j);
-
-
-EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
-
-// 查询
-List<Type> result = ethContract.select(
-            contractAddress, // 合约地址
-            ethAbiCodec.getInputData(
-                    "balanceOf", // 要调用的方法名称
-                    new Address(toAddress) // 方法的参数，如果有多个，可以继续传入下一个参数
-            ),  // 要调用的方法的inputData
-            new TypeReference<Uint256>() {} // 方法的返回类型，如果有多个返回值，可以继续传入下一个参数
-        );
-
-// 往合约里写入数据
-// gasPrice，gasLimit 两个参数，如果想用默认值可以不传，或者传null
-// 如果不传的话，两个参数都必须不传，要传就一起传， 如果设置为null的话，可以一个为null，一个有值
-SendResultModel sendResultModel = ethContract.sendRawTransaction(
-                    fromAddress, // 调用者的地址
-                    contractAddress, // 合约地址
-                    privateKey, // fromAddress的私钥
-                    new BigInteger("1200000"), // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
-                    new BigInteger("800000"), // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
-                    ethAbiCodec.getInputData(
-                            "transfer", // 要调用的方法名称
-                            new Address(toAddress), // 方法的参数，如果有多个，可以继续传入下一个参数
-                            new Uint256(new BigInteger("1000000000000000000")) // 方法的参数，如果有多个，可以继续传入下一个参数
-                    ) // 要调用的方法的inputData
-            );
-
-sendResultModel.getEthSendTransaction(); // 发送交易后的结果
-sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
-```
-
-## 项目内置了几个functionCode
-
-如果你刚好要监听这几个函数，那么可以直接用，前提是你的合约里的函数必须跟 Openzeppelin 的规范一样，连参数列表的顺序都必须一样
-
-### ERC20
-
-```java
-ERC20.TRANSFER.getFunctionCode();
-ERC20.APPROVE.getFunctionCode();
-ERC20.TRANSFER_FROM.getFunctionCode();
-```
-
-### ERC721
-
-```java
-ERC721.SAFE_TRANSFER_FROM.getFunctionCode();
-ERC721.SAFE_TRANSFER_FROM_TWO.getFunctionCode(); // 没有data的那个
-ERC721.TRANSFER_FROM.getFunctionCode();
-ERC721.APPROVE.getFunctionCode();
-ERC721.SET_APPROVAL_FOR_ALL.getFunctionCode();
-```
-
-### ERC1155
-
-```java
-ERC1155.SET_APPROVAL_FOR_ALL.getFunctionCode();
-ERC1155.SAFE_TRANSFER_FROM.getFunctionCode();
-ERC1155.SAFE_BATCH_TRANSFER_FROM.getFunctionCode();
 ```

@@ -1,6 +1,8 @@
-# Magician-Web3
+# Magician-Blockchain
 
-Magician-Web3 is a toolkit for scanning blockchains developed in Java, which can come in handy when we need some functionality in our programs, for example.
+## Magician-Scanning
+
+Magician-Scanning is a toolkit for scanning blockchains developed in Java, which can come in handy when we need some functionality in our programs, for example.
 
 - When an address receives ETH, a method in the program is automatically triggered and this transaction is passed into the method.
 
@@ -10,17 +12,13 @@ Magician-Web3 is a toolkit for scanning blockchains developed in Java, which can
 
 It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 
-In addition, some secondary packaging has been done for Web3j to reduce the workload of developers in certain scenarios
-
-## Initial configuration
-
 ### Importing dependencies
 
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-Web3</artifactId>
-    <version>1.0.5</version>
+    <artifactId>Magician-Scanning</artifactId>
+    <version>1.0.6</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -30,8 +28,6 @@ In addition, some secondary packaging has been done for Web3j to reduce the work
     <version>1.7.12</version>
 </dependency>
 ```
-
-## Scan blocks and listen for transaction events
 
 ### Create a listener
 
@@ -244,11 +240,387 @@ If you have a scan task + a retry strategy, then two threads are needed, so the 
 EventThreadPool.init(2);
 ```
 
-## Web3j Extensions
+### InputData Codec
 
-Several basic methods have been extended on top of Web3j to reduce the workload of developers to a certain extent
+```java
+// Encoding
+String inputData = EthAbiCodec.getInputData(
+            "transfer", // Method name
+            new Address(toAddress), // Parameter 1
+            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
+    );
 
-### Coin iquiry and Transfer
+// Decoding
+List<Type> result = EthAbiCodec.decoderInputData(
+            "0x" + inputData.substring(10), // Removing  method signatures from inputData
+            new TypeReference<Address>() {}, // The type of the parameter1 of the method being encoded
+            new TypeReference<Uint256>() {} // The type of the parameter2 of the method being encoded， If there are other parameters, you can go ahead and pass in the next
+    );
+
+for(Type type : result){
+    System.out.println(type.getValue());
+}
+
+// Get the method signature, which is actually the first ten characters of inputData, containing 0x.
+// Here only focus on the type of parameters, the value can be passed freely, because we need only the first ten characters, not the full inputData
+String functionCode = EthAbiCodec.getFunAbiCode(
+            "transfer", // Method name
+            new Address(toAddress), // Parameter 1
+            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
+    );
+```
+
+### The project has several built-in functionCode
+
+If you need to listen to these functions, then you can use them directly, as long as the functions in your contract have the same specification as Openzeppelin, and even the order of the parameter list must be the same
+
+#### ERC20
+
+```java
+ERC20.TRANSFER.getFunctionCode();
+ERC20.APPROVE.getFunctionCode();
+ERC20.TRANSFER_FROM.getFunctionCode();
+```
+
+#### ERC721
+
+```java
+ERC721.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC721.SAFE_TRANSFER_FROM_TWO.getFunctionCode(); // The one without the data parameter
+ERC721.TRANSFER_FROM.getFunctionCode();
+ERC721.APPROVE.getFunctionCode();
+ERC721.SET_APPROVAL_FOR_ALL.getFunctionCode();
+```
+
+#### ERC1155
+
+```java
+ERC1155.SET_APPROVAL_FOR_ALL.getFunctionCode();
+ERC1155.SAFE_TRANSFER_FROM.getFunctionCode();
+ERC1155.SAFE_BATCH_TRANSFER_FROM.getFunctionCode();
+```
+
+## Magician-ContractsTools
+
+Magician-ContractsTools is a toolkit for calling smart contracts , you can very easily call smart contracts in Java programs for query and write operations.
+
+There are three built-in standard contract templates, ERC20, ERC721, and ERC1155, which can help you get things done very quickly if you need to call the standard functions in these three contracts. In addition to the built-in contract templates, it is also easy to call custom contract functions if you need to do so, and we will continue to add standard templates later.
+
+In addition, there are tools for InputData decoding and ETH query and transfer
+
+It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
+
+### Importing dependencies
+
+```xml
+<dependency>
+    <groupId>com.github.yuyenews</groupId>
+    <artifactId>Magician-ContractsTools</artifactId>
+    <version>1.0.0</version>
+</dependency>
+
+<!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <version>1.7.12</version>
+</dependency>
+```
+
+### Contract Query and Write
+
+```java
+String privateKey = ""; // Private key
+Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
+
+String contractAddress = "";
+
+EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
+
+// Query
+List<Type> result = ethContractUtil.select(
+            contractAddress, // Contract Address
+            EthAbiCodecTool.getInputData(
+                    "balanceOf", // Name of the method to be called
+                    new Address(toAddress) // method, if there are multiple parameters, you can continue to pass the next parameter
+            ),  // The inputData of the method to be called
+            new TypeReference<Uint256>() {} // The return type of the method, if there is more than one return value, you can continue to pass the next parameter
+        );
+
+// Write data to the contract
+// gasPrice, gasLimit two parameters, if you want to use the default value can not pass, or pass null
+// If not, don't pass both parameters, if you want to pass them, pass them together, if set to null, one can be null and one can have a value
+SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
+                fromAddress, // Address of the caller
+                contractAddress, // Contract Address
+                privateKey, // Private key of fromAddress
+                new BigInteger("1200000"), // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                new BigInteger("800000"), // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
+                EthAbiCodecTool.getInputData(
+                        "transfer", // Name of the method to be called
+                        new Address(toAddress), // Parameter 1
+                        new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
+                ) // The inputData of the method to be called
+        );
+
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+```
+
+### Contract Templates
+
+Currently there are only three templates, and they will continue to be added later
+
+#### Calling ERC20 Contracts
+
+Read
+
+```java
+// Call the totalSupply function of the contract
+BigInteger total = erc20Contract.totalSupply();
+
+// Call the balanceOf function of the contract
+BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
+
+// Call the allowance function of the contract
+BigInteger amount = erc20Contract.allowance("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", "0x552115849813d334C58f2757037F68E2963C4c5e");
+```
+
+Write
+
+```java
+// Call the transfer function of the contract
+SendResultModel sendResultModel = erc20Contract.transfer(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                new BigInteger("1000000000000000000"), // Transfer Amount
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the transferFrom function of the contract
+SendResultModel sendResultModel = erc20Contract.transferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                new BigInteger("1000000000000000000"), // Transfer Amount
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the approve function of the contract
+SendResultModel sendResultModel = erc20Contract.approve(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
+                new BigInteger("1000000000000000000"), // Amount
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+```
+
+#### Calling the ERC721 contract
+
+Read
+
+```java
+// Call the balanceOf function of the contract
+BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
+
+// Call the ownerOf function of the contract
+String ownerAddress = erc721Contract.ownerOf(new BigInteger("1002"));
+
+// Call the isApprovedForAll function of the contract
+Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", "0x552115849813d334C58f2757037F68E2963C4c5e");
+
+// Call the getApproved function of the contract
+String approvedAddress = erc721Contract.getApproved(new BigInteger("1002"));
+```
+
+Write
+
+```java
+// Call the approve function of the contract
+SendResultModel sendResultModel = erc721Contract.approve(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
+                new BigInteger("1002"), // tokenId
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the transferFrom function of the contract
+SendResultModel sendResultModel = erc20Contract.transferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                new BigInteger("1002"), // tokenId
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the safeTransferFrom function of the contract(The one without the data parameter)
+SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                new BigInteger("1002"), // tokenId
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the safeTransferFrom function of the contract
+SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                new BigInteger("1002"), // tokenId
+                new byte[0], // data
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the setApprovalForAll function of the contract
+SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
+                true, // Whether to approval all
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+```
+
+#### Calling the ERC1155 contract
+
+Read
+
+```java
+// Call the balanceOf function of the contract
+BigInteger amount = erc1155Contract.balanceOf("0x552115849813d334C58f2757037F68E2963C4c5e", new BigInteger("0"));
+
+// Call the balanceOfBatch function of the contract
+List<String> address = new ArrayList<>();
+address.add("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
+address.add("0x552115849813d334C58f2757037F68E2963C4c5e");
+
+List<BigInteger> tokenId = new ArrayList<>();
+tokenId.add(new BigInteger("0"));
+tokenId.add(new BigInteger("0"));
+
+List<BigInteger> amounts = erc1155Contract.balanceOfBatch(address, tokenId);
+
+// Call the isApprovedForAll function of the contract
+Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", "0x552115849813d334C58f2757037F68E2963C4c5e");
+```
+
+Write
+
+```java
+// Call the setApprovalForAll function of the contract
+SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
+                true, // Whether to approval all
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the safeTransferFrom function of the contract
+SendResultModel sendResultModel = erc1155Contract.safeTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                new BigInteger("1002"), // tokenId
+                new BigInteger("1"), // 数量
+                new byte[0], // data
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+
+// Call the safeBatchTransferFrom function of the contract
+List<BigInteger> tokenIds = new ArrayList<>();
+tokenIds.add(new BigInteger("1002"));
+tokenIds.add(new BigInteger("1003"));
+
+List<BigInteger> amounts = new ArrayList<>();
+amounts.add(new BigInteger("1"));
+amounts.add(new BigInteger("10"));
+
+SendResultModel sendResultModel = erc1155Contract.safeBatchTransferFrom(
+                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
+                "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
+                tokenIds, // tokenId collection
+                amounts, // amount collection
+                new byte[0], // data
+                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
+                "", // PrivateKey of the caller
+                null, // gasPrice, if null is passed, the default value is automatically used
+                null // gasLimit, if null is passed, the default value is automatically used
+        );
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
+```
+
+### InputData Codec
+
+```java
+// Encoding
+String inputData = EthAbiCodecTool.getInputData(
+            "transfer", // Method name
+            new Address(toAddress), // Parameter 1
+            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
+    );
+
+// Decoding
+List<Type> result = EthAbiCodecTool.decoderInputData(
+            "0x" + inputData.substring(10), // Removing  method signatures from inputData
+            new TypeReference<Address>() {}, // The type of the parameter1 of the method being encoded
+            new TypeReference<Uint256>() {} // The type of the parameter2 of the method being encoded， If there are other parameters, you can go ahead and pass in the next
+    );
+
+for(Type type : result){
+    System.out.println(type.getValue());
+}
+
+// Get the method signature, which is actually the first ten characters of inputData, containing 0x.
+// Here only focus on the type of parameters, the value can be passed freely, because we need only the first ten characters, not the full inputData
+String functionCode = EthAbiCodecTool.getFunAbiCode(
+            "transfer", // Method name
+            new Address(toAddress), // Parameter 1
+            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
+    );
+```
+
+### Coin Query and Transfer
 
 ```java
 String privateKey = ""; // Private key
@@ -269,113 +641,4 @@ TransactionReceipt transactionReceipt = ethHelper.transfer(
             BigDecimal.valueOf(1), // Sending quantity
             Convert.Unit.ETHER // Units of quantity
 );
-```
-
-### InputData Codec
-
-```java
-// This approach is a single instance of
-EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
-// If you want to create multiple EthAbiCodec objects, you can do so in this way
-EthAbiCodec ethAbiCodec = new EthAbiCodec();
-
-// Encoding
-String inputData = ethAbiCodec.getInputData(
-            "transfer", // Method name
-            new Address(toAddress), // Parameter 1
-            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
-    );
-
-// Decoding
-List<Type> result = ethAbiCodec.decoderInputData(
-            "0x" + inputData.substring(10), // Removing  method signatures from inputData
-            new TypeReference<Address>() {}, // The type of the parameter1 of the method being encoded
-            new TypeReference<Uint256>() {} // The type of the parameter2 of the method being encoded， If there are other parameters, you can go ahead and pass in the next
-    );
-
-for(Type type : result){
-    System.out.println(type.getValue());
-}
-
-// Get the method signature, which is actually the first ten characters of inputData, containing 0x.
-// Here only focus on the type of parameters, the value can be passed freely, because we need only the first ten characters, not the full inputData
-String functionCode = ethAbiCodec.getFunAbiCode(
-            "transfer", // Method name
-            new Address(toAddress), // Parameter 1
-            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
-    );
-```
-
-### Contract Query and Write
-
-```java
-String privateKey = ""; // Private key
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
-
-// This approach is a single instance of
-EthContract ethContract = MagicianWeb3.getEthBuilder().getEthContract(web3j);
-// If you want to create multiple EthContract objects, you can do so in this way
-EthContract ethContract = EthContract.builder(web3j);
-
-
-EthAbiCodec ethAbiCodec = MagicianWeb3.getEthBuilder().getEthAbiCodec();
-
-// Query
-List<Type> result = ethContract.select(
-            contractAddress, // Contract Address
-            ethAbiCodec.getInputData(
-                    "balanceOf", // Name of the method to be called
-                    new Address(toAddress) // method, if there are multiple parameters, you can continue to pass the next parameter
-            ),  // The inputData of the method to be called
-            new TypeReference<Uint256>() {} // The return type of the method, if there is more than one return value, you can continue to pass the next parameter
-        );
-
-// Write data to the contract
-// gasPrice, gasLimit two parameters, if you want to use the default value can not pass, or pass null
-// If not, don't pass both parameters, if you want to pass them, pass them together, if set to null, one can be null and one can have a value
-SendResultModel sendResultModel = ethContract.sendRawTransaction(
-                    fromAddress, // Address of the caller
-                    contractAddress, // Contract Address
-                    privateKey, // Private key of fromAddress
-                    new BigInteger("1200000"), // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
-                    new BigInteger("800000"), // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
-                    ethAbiCodec.getInputData(
-                            "transfer", // Name of the method to be called
-                            new Address(toAddress), // Parameter 1
-                            new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
-                    ) // The inputData of the method to be called
-            );
-
-sendResultModel.getEthSendTransaction(); // Results after sending a transaction
-sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
-```
-
-## The project has several built-in functionCode
-
-If you need to listen to these functions, then you can use them directly, as long as the functions in your contract have the same specification as Openzeppelin, and even the order of the parameter list must be the same
-
-### ERC20
-
-```java
-ERC20.TRANSFER.getFunctionCode();
-ERC20.APPROVE.getFunctionCode();
-ERC20.TRANSFER_FROM.getFunctionCode();
-```
-
-### ERC721
-
-```java
-ERC721.SAFE_TRANSFER_FROM.getFunctionCode();
-ERC721.SAFE_TRANSFER_FROM_TWO.getFunctionCode(); // The one without the data parameter
-ERC721.TRANSFER_FROM.getFunctionCode();
-ERC721.APPROVE.getFunctionCode();
-ERC721.SET_APPROVAL_FOR_ALL.getFunctionCode();
-```
-
-### ERC1155
-
-```java
-ERC1155.SET_APPROVAL_FOR_ALL.getFunctionCode();
-ERC1155.SAFE_TRANSFER_FROM.getFunctionCode();
-ERC1155.SAFE_BATCH_TRANSFER_FROM.getFunctionCode();
 ```
