@@ -316,7 +316,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -329,6 +329,8 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 
 ### Contract Query and Write
 
+Initialize the contract util class
+
 ```java
 String privateKey = ""; // Private key
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
@@ -336,8 +338,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance
 String contractAddress = "";
 
 EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
+```
 
-// Query
+Read contract
+
+```java
 List<Type> result = ethContractUtil.select(
             contractAddress, // Contract Address
             EthAbiCodecTool.getInputData(
@@ -346,16 +351,19 @@ List<Type> result = ethContractUtil.select(
             ),  // The inputData of the method to be called
             new TypeReference<Uint256>() {} // The return type of the method, if there is more than one return value, you can continue to pass the next parameter
         );
+```
 
-// Write data to the contract
-// gasPrice, gasLimit two parameters, if you want to use the default value can not pass, or pass null
-// If not, don't pass both parameters, if you want to pass them, pass them together, if set to null, one can be null and one can have a value
+Write contract
+
+```java
 SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
-                fromAddress, // Address of the caller
-                contractAddress, // Contract Address
-                privateKey, // Private key of fromAddress
-                new BigInteger("1200000"), // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
-                new BigInteger("800000"), // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setToAddress(contractAddress) // Contract Address
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
                 EthAbiCodecTool.getInputData(
                         "transfer", // Name of the method to be called
                         new Address(toAddress), // Parameter 1
@@ -373,7 +381,7 @@ Currently there are only three templates, and they will continue to be added lat
 
 #### Calling ERC20 Contracts
 
-Read
+Initialization Contract Template
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
@@ -381,8 +389,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance
 String contractAddress = "";
 
 ERC20Contract erc20Contract = ERC20Contract.builder(web3j, contractAddress);
+```
 
+Read
 
+```java
 // Call the totalSupply function of the contract
 BigInteger total = erc20Contract.totalSupply();
 
@@ -396,20 +407,16 @@ BigInteger amount = erc20Contract.allowance("0xb4e32492E9725c3215F1662Cf28Db1862
 Write
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-
-String contractAddress = "";
-
-ERC20Contract erc20Contract = ERC20Contract.builder(web3j, contractAddress);
-
 // Call the transfer function of the contract
 SendResultModel sendResultModel = erc20Contract.transfer(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
                 new BigInteger("1000000000000000000"), // Transfer Amount
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -419,10 +426,12 @@ SendResultModel sendResultModel = erc20Contract.transferFrom(
                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
                 new BigInteger("1000000000000000000"), // Transfer Amount
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -431,10 +440,12 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 SendResultModel sendResultModel = erc20Contract.approve(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
                 new BigInteger("1000000000000000000"), // Amount
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -442,7 +453,7 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 
 #### Calling the ERC721 contract
 
-Read
+Initialization Contract Template
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
@@ -450,7 +461,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance
 String contractAddress = "";
 
 ERC721Contract erc721Contract = ERC721Contract.builder(web3j, contractAddress);
+```
 
+Read
+
+```java
 // Call the balanceOf function of the contract
 BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
 
@@ -467,20 +482,16 @@ String approvedAddress = erc721Contract.getApproved(new BigInteger("1002"));
 Write
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-
-String contractAddress = "";
-
-ERC721Contract erc721Contract = ERC721Contract.builder(web3j, contractAddress);
-
 // Call the approve function of the contract
 SendResultModel sendResultModel = erc721Contract.approve(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
                 new BigInteger("1002"), // tokenId
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -490,10 +501,12 @@ SendResultModel sendResultModel = erc20Contract.transferFrom(
                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
                 new BigInteger("1002"), // tokenId
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -503,10 +516,12 @@ SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Transfer payer
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
                 new BigInteger("1002"), // tokenId
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -517,10 +532,12 @@ SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // Transfer recipient
                 new BigInteger("1002"), // tokenId
                 new byte[0], // data
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -529,10 +546,12 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
                 true, // Whether to approval all
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -540,7 +559,8 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 
 #### Calling the ERC1155 contract
 
-Read
+
+Initialization Contract Template
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
@@ -548,7 +568,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance
 String contractAddress = "";
 
 ERC1155Contract erc1155Contract = ERC1155Contract.builder(web3j, contractAddress);
+```
 
+Read
+
+```java
 
 // Call the balanceOf function of the contract
 BigInteger amount = erc1155Contract.balanceOf("0x552115849813d334C58f2757037F68E2963C4c5e", new BigInteger("0"));
@@ -571,21 +595,16 @@ Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28
 Write
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-
-String contractAddress = "";
-
-ERC1155Contract erc1155Contract = ERC1155Contract.builder(web3j, contractAddress);
-
-
 // Call the setApprovalForAll function of the contract
 SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // spender
                 true, // Whether to approval all
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -597,10 +616,12 @@ SendResultModel sendResultModel = erc1155Contract.safeTransferFrom(
                 new BigInteger("1002"), // tokenId
                 new BigInteger("1"), // 数量
                 new byte[0], // data
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
@@ -620,10 +641,12 @@ SendResultModel sendResultModel = erc1155Contract.safeBatchTransferFrom(
                 tokenIds, // tokenId collection
                 amounts, // amount collection
                 new byte[0], // data
-                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // Address of the caller
-                "", // PrivateKey of the caller
-                null, // gasPrice, if null is passed, the default value is automatically used
-                null // gasLimit, if null is passed, the default value is automatically used
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+                        .setPrivateKey("")// Private key of senderAddress
+                        .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         );
 sendResultModel.getEthSendTransaction(); // Results after sending a transaction
 sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast

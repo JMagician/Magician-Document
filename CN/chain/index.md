@@ -314,7 +314,7 @@ Magician-ContractsTools是一个用于调用智能合约的工具包，你可以
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -327,14 +327,20 @@ Magician-ContractsTools是一个用于调用智能合约的工具包，你可以
 
 ### 合约查询 以及 写入
 
+初始化合约工具对象
+
 ```java
 String privateKey = ""; // 私钥
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // 链的RPC地址
+
 String contractAddress = "";
 
 EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
+```
 
-// 查询
+查询合约
+
+```java
 List<Type> result = ethContractUtil.select(
             contractAddress, // 合约地址
             EthAbiCodecTool.getInputData(
@@ -343,21 +349,25 @@ List<Type> result = ethContractUtil.select(
             ),  // 要调用的方法的inputData
             new TypeReference<Uint256>() {} // 方法的返回类型，如果有多个返回值，可以继续传入下一个参数
         );
+```
 
+写入合约
+
+```java
 // 往合约里写入数据
-// gasPrice，gasLimit 两个参数，如果想用默认值可以不传，或者传null
-// 如果不传的话，两个参数都必须不传，要传就一起传， 如果设置为null的话，可以一个为null，一个有值
 SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
-                    senderAddress, // 调用者的地址
-                    contractAddress, // 合约地址
-                    privateKey, // senderAddress的私钥
-                    new BigInteger("1200000"), // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
-                    new BigInteger("800000"), // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
-                    EthAbiCodecTool.getInputData(
-                            "transfer", // 要调用的方法名称
-                            new Address(toAddress), // 方法的参数，如果有多个，可以继续传入下一个参数
-                            new Uint256(new BigInteger("1000000000000000000")) // 方法的参数，如果有多个，可以继续传入下一个参数
-                    ) // 要调用的方法的inputData
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setToAddress(contractAddress) // 合约地址
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
+                EthAbiCodecTool.getInputData(
+                        "transfer", // 要调用的方法名称
+                        new Address(toAddress), // 方法的参数，如果有多个，可以继续传入下一个参数
+                        new Uint256(new BigInteger("1000000000000000000")) // 方法的参数，如果有多个，可以继续传入下一个参数
+                ) // 要调用的方法的inputData
             );
 
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
@@ -370,7 +380,7 @@ sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
 
 #### 调用ERC20合约
 
-查询
+初始化合约模板
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
@@ -378,8 +388,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance
 String contractAddress = "";
 
 ERC20Contract erc20Contract = ERC20Contract.builder(web3j, contractAddress);
+```
 
+查询
 
+```java
 // 调用合约的 totalSupply 函数
 BigInteger total = erc20Contract.totalSupply();
 
@@ -393,21 +406,16 @@ BigInteger amount = erc20Contract.allowance("0xb4e32492E9725c3215F1662Cf28Db1862
 写入
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-
-String contractAddress = "";
-
-ERC20Contract erc20Contract = ERC20Contract.builder(web3j, contractAddress);
-
-
 // 调用合约的 transfer 函数
 SendResultModel sendResultModel = erc20Contract.transfer(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
                 new BigInteger("1000000000000000000"), // 转账金额
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -417,10 +425,12 @@ SendResultModel sendResultModel = erc20Contract.transferFrom(
                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
                 new BigInteger("1000000000000000000"), // 转账金额
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -429,10 +439,12 @@ sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
 SendResultModel sendResultModel = erc20Contract.approve(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
                 new BigInteger("1000000000000000000"), // 授权金额
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -440,7 +452,7 @@ sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
 
 #### 调用ERC721合约
 
-查询
+初始化合约模板
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
@@ -448,7 +460,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance
 String contractAddress = "";
 
 ERC721Contract erc721Contract = ERC721Contract.builder(web3j, contractAddress);
+```
 
+查询
+
+```java
 // 调用合约的 balanceOf 函数
 BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
 
@@ -465,20 +481,16 @@ String approvedAddress = erc721Contract.getApproved(new BigInteger("1002"));
 写入
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-
-String contractAddress = "";
-
-ERC721Contract erc721Contract = ERC721Contract.builder(web3j, contractAddress);
-
 // 调用 approve 函数
 SendResultModel sendResultModel = erc721Contract.approve(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
                 new BigInteger("1002"), // 授权的tokenId
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -488,10 +500,12 @@ SendResultModel sendResultModel = erc20Contract.transferFrom(
                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
                 new BigInteger("1002"), // tokenId
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -501,10 +515,12 @@ SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
                 "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 转账付款人
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
                 new BigInteger("1002"), // tokenId
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -515,10 +531,12 @@ SendResultModel sendResultModel = erc20Contract.safeTransferFrom(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 转账接收人
                 new BigInteger("1002"), // tokenId
                 new byte[0], // data
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -527,10 +545,12 @@ sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
 SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
                 true, // 是否授权全部
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -538,7 +558,7 @@ sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
 
 #### 调用ERC1155合约
 
-查询
+初始化合约模板
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
@@ -546,7 +566,11 @@ Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance
 String contractAddress = "";
 
 ERC1155Contract erc1155Contract = ERC1155Contract.builder(web3j, contractAddress);
+```
 
+查询
+
+```java
 // 调用 balanceOf 函数
 BigInteger amount = erc1155Contract.balanceOf("0x552115849813d334C58f2757037F68E2963C4c5e", new BigInteger("0"));
 
@@ -568,20 +592,16 @@ Boolean result = erc1155Contract.isApprovedForAll("0xb4e32492E9725c3215F1662Cf28
 写入
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-
-String contractAddress = "";
-
-ERC1155Contract erc1155Contract = ERC1155Contract.builder(web3j, contractAddress);
-
 // 调用 setApprovalForAll 函数
 SendResultModel sendResultModel = erc1155Contract.setApprovalForAll(
                 "0x552115849813d334C58f2757037F68E2963C4c5e", // 被授权人
                 true, // 是否授权全部
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -593,10 +613,12 @@ SendResultModel sendResultModel = erc1155Contract.safeTransferFrom(
                 new BigInteger("1002"), // tokenId
                 new BigInteger("1"), // 数量
                 new byte[0], // data
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
@@ -616,10 +638,12 @@ SendResultModel sendResultModel = erc1155Contract.safeBatchTransferFrom(
                 tokenIds, // tokenId 集合
                 amounts, // 数量 集合
                 new byte[0], // data
-                "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84", // 调用者的地址
-                "", // 调用者的私钥
-                null, // gasPrice，如果传null，自动使用默认值
-                null // gasLimit，如果传null，自动使用默认值
+                SendModel.builder()
+                        .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // 调用者的地址
+                        .setPrivateKey("")// senderAddress的私钥
+                        .setValue(new BigInteger("1000000000")) // 主链币数量，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
+                        .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
         );
 sendResultModel.getEthSendTransaction(); // 发送交易后的结果
 sendResultModel.getEthGetTransactionReceipt(); // 交易成功上链后的结果
