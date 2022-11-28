@@ -660,9 +660,6 @@ String functionCode = EthAbiCodecTool.getFunAbiCode(
 String privateKey = ""; // 私钥
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // 链的RPC地址
 
-// 这种方式是单例的
-EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j);
-// 如果你想创建多个EthHelper对象，可以用这种方式
 EthHelper ethHelper = EthHelper.builder(web3j);
 
 // 余额查询

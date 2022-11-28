@@ -665,9 +665,6 @@ String functionCode = EthAbiCodecTool.getFunAbiCode(
 String privateKey = ""; // Private key
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-1-s1.binance.org:8545/")); // RPC address of the chain
 
-// This approach is a single instance of
-EthHelper ethHelper =  MagicianWeb3.getEthBuilder().getEth(web3j);
-// If you want to create multiple EthHelper objects, you can do so in this way
 EthHelper ethHelper = EthHelper.builder(web3j);
 
 // Balance Query

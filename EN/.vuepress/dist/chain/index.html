@@ -17,7 +17,7 @@
     <meta name="description" content="A Java development toolkit for most blockchain and web development scenarios">
     <meta name="keywords" content="Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,Web">
     
-    <link rel="preload" href="/assets/css/0.styles.e1700646.css" as="style"><link rel="preload" href="/assets/js/app.dd6b2037.js" as="script"><link rel="preload" href="/assets/js/2.09610e94.js" as="script"><link rel="preload" href="/assets/js/8.aecc2683.js" as="script"><link rel="prefetch" href="/assets/js/10.064b5d6c.js"><link rel="prefetch" href="/assets/js/11.76b28cd0.js"><link rel="prefetch" href="/assets/js/12.8eb6dd98.js"><link rel="prefetch" href="/assets/js/13.985801a2.js"><link rel="prefetch" href="/assets/js/3.d341c646.js"><link rel="prefetch" href="/assets/js/4.b7b73457.js"><link rel="prefetch" href="/assets/js/5.136e2504.js"><link rel="prefetch" href="/assets/js/6.a9aa8f92.js"><link rel="prefetch" href="/assets/js/7.c29d72f7.js"><link rel="prefetch" href="/assets/js/9.16dd363e.js">
+    <link rel="preload" href="/assets/css/0.styles.e1700646.css" as="style"><link rel="preload" href="/assets/js/app.7aeba7b9.js" as="script"><link rel="preload" href="/assets/js/2.09610e94.js" as="script"><link rel="preload" href="/assets/js/8.4f6b9e03.js" as="script"><link rel="prefetch" href="/assets/js/10.a9f69537.js"><link rel="prefetch" href="/assets/js/11.65974858.js"><link rel="prefetch" href="/assets/js/12.6620128a.js"><link rel="prefetch" href="/assets/js/13.a30a72a7.js"><link rel="prefetch" href="/assets/js/3.d341c646.js"><link rel="prefetch" href="/assets/js/4.b7b73457.js"><link rel="prefetch" href="/assets/js/5.136e2504.js"><link rel="prefetch" href="/assets/js/6.a9aa8f92.js"><link rel="prefetch" href="/assets/js/7.8ad10fcc.js"><link rel="prefetch" href="/assets/js/9.e7b0d137.js">
     <link rel="stylesheet" href="/assets/css/0.styles.e1700646.css">
   </head>
   <body>
@@ -559,9 +559,6 @@ sendResultModel<span class="token punctuation">.</span><span class="token functi
 </code></pre></div><h3 id="coin-query-and-transfer"><a href="#coin-query-and-transfer" class="header-anchor">#</a> Coin Query and Transfer</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">String</span> privateKey <span class="token operator">=</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">;</span> <span class="token comment">// Private key</span>
 <span class="token class-name">Web3j</span> web3j <span class="token operator">=</span> <span class="token class-name">Web3j</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">HttpService</span><span class="token punctuation">(</span><span class="token string">&quot;https://data-seed-prebsc-1-s1.binance.org:8545/&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// RPC address of the chain</span>
 
-<span class="token comment">// This approach is a single instance of</span>
-<span class="token class-name">EthHelper</span> ethHelper <span class="token operator">=</span>  <span class="token class-name">MagicianWeb3</span><span class="token punctuation">.</span><span class="token function">getEthBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getEth</span><span class="token punctuation">(</span>web3j<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">// If you want to create multiple EthHelper objects, you can do so in this way</span>
 <span class="token class-name">EthHelper</span> ethHelper <span class="token operator">=</span> <span class="token class-name">EthHelper</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span>web3j<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token comment">// Balance Query</span>
@@ -575,6 +572,6 @@ sendResultModel<span class="token punctuation">.</span><span class="token functi
             <span class="token class-name">Convert<span class="token punctuation">.</span>Unit</span><span class="token punctuation">.</span>ETHER <span class="token comment">// Units of quantity</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
-    <script src="/assets/js/app.dd6b2037.js" defer></script><script src="/assets/js/2.09610e94.js" defer></script><script src="/assets/js/8.aecc2683.js" defer></script>
+    <script src="/assets/js/app.7aeba7b9.js" defer></script><script src="/assets/js/2.09610e94.js" defer></script><script src="/assets/js/8.4f6b9e03.js" defer></script>
   </body>
 </html>
