@@ -2,7 +2,7 @@
 home: true
 heroImage: https://magician-io.com/source/images/logo1.png
 actionText: 视频演示 →
-actionLink: https://www.bilibili.com/video/BV1AV4y1E7AM?spm_id_from=333.999.0.0&vd_source=f4c8caf8f0691160cc645e85690569be
+actionLink: https://space.bilibili.com/41981562/channel/series
 footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail123@gmail.com
 ---
 
