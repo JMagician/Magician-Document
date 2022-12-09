@@ -40,7 +40,7 @@ module.exports = {
         { text: 'Social Networks', 
             items: [
               {text: 'Telegram', link: 'https://t.me/magicianio'},
-              {text: 'Weibo(@Beeruscc)', link: 'https://weibo.com/u/5453518101'}
+              {text: 'Weibo(@Magician开源)', link: 'https://weibo.com/u/5453518101'}
             ]
           },
         {

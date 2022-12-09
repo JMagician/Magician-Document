@@ -42,7 +42,7 @@ module.exports = {
         text: '社交平台',
         items: [
           { text: 'Telegram', link: 'https://t.me/magicianio' },
-          { text: '微博(@Beeruscc)', link: 'https://weibo.com/u/5453518101' }
+          { text: '微博(@Magician开源)', link: 'https://weibo.com/u/5453518101' }
         ]
       },
       {
