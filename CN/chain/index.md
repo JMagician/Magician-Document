@@ -17,7 +17,7 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -143,6 +143,28 @@ MagicianBlockchainScan.create()
         .start();
 
 // TODO 暂时不支持SOL和TRON， 正在开发中......
+```
+
+### 停止某一个扫块任务
+
+```java
+// 将对象拿到
+MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // 节点的RPC地址
+        .setScanPeriod(5000) // 间隔多久，扫描下一个区块
+        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
+        .addEthMonitorEvent(new EventOne()) // 添加 监听事件
+        .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
+        .addEthMonitorEvent(new EventThree()); // 添加 监听事件
+
+// 因为start方法没有返回值，所以上面的链式不可以调用start，需要改成用返回的对象来调用
+blockChainScan.start();
+
+// 调用这个方法可以停止这一个扫块任务
+blockChainScan.shutdown();
 ```
 
 ### 使用代理访问RPC地址

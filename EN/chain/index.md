@@ -18,7 +18,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -145,6 +145,28 @@ MagicianBlockchainScan.create()
         .start();
 
 // TODO SOL and TRON are not supported for now, under development......
+```
+
+### Stop a particular scan job
+
+```java
+// Get the object to the
+MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // RPC address of the node
+        .setScanPeriod(5000) // Interval of each round of scanning
+        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
+        .addEthMonitorEvent(new EventOne()) // Add Listening Events
+        .addEthMonitorEvent(new EventTwo()) // Add Listening Events
+        .addEthMonitorEvent(new EventThree()) // Add Listening Events
+
+// Because the start method has no return value, the above chain cannot call start, but needs to be called with the returned object instead
+blockChainScan.start();
+
+// Call this method to stop this one scan task
+blockChainScan.shutdown();
 ```
 
 ### Using a proxy to access RPC addresses
