@@ -17,7 +17,7 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -165,6 +165,13 @@ blockChainScan.start();
 
 // 调用这个方法可以停止这一个扫块任务
 blockChainScan.shutdown();
+```
+
+### 停止所有扫描任务
+
+```java
+// 调用这个方法停止所有任务
+MagicianBlockchainScan.shutdownAll();
 ```
 
 ### 使用代理访问RPC地址

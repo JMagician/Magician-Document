@@ -18,7 +18,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -167,6 +167,13 @@ blockChainScan.start();
 
 // Call this method to stop this one scan task
 blockChainScan.shutdown();
+```
+
+### Stop all scan task
+
+```java
+// Call this method to stop all scan task
+MagicianBlockchainScan.shutdownAll();
 ```
 
 ### Using a proxy to access RPC addresses
