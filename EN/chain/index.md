@@ -345,7 +345,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -393,6 +393,7 @@ SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
                         .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
                         .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
                         .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setNonce(new BigInteger("100")), // nonce，If you want to use the default value, you can pass null directly or leave this parameter out.
                 EthAbiCodecTool.getInputData(
                         "transfer", // Name of the method to be called
                         new Address(toAddress), // Parameter 1
