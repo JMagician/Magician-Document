@@ -17,7 +17,7 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -28,11 +28,12 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 </dependency>
 ```
 
-### 创建一个监听器
+### ETH(BSC, POYGAN 等)链
+
+#### 创建监听器
 
 监听器 可以创建多个，根据你的需求 分别设置监听条件
 
-#### ETH(BSC, POYGAN 等)监听器
 ```java
 /**
  * 创建一个类，实现 EthMonitorEvent接口 即可
@@ -116,17 +117,12 @@ public EthMonitorFilter ethMonitorFilter() {
 }
 ```
 
-#### SOL, TRON 链的扫块正在开发中......
-
-```java
-开发中......
-```
-
-### 开启一个扫块任务
+#### 开启一个扫块任务
 
 ```java
 
-// 初始化线程池，核心线程数必须 >= 扫块的任务数量 + 重试策略的数量
+// 初始化线程池，核心线程数必须 >= 全局的扫块的任务数量 + 全局的重试策略的数量
+// 这是一个全局配置，不管你开了几个任务，不管你需要扫描几条链，几种链，都只需要写一次这句代码
 EventThreadPool.init(1);
 
 // 开启一个扫块任务，如果你想扫描多个链，那么直接拷贝这段代码，并修改配置即可
@@ -141,42 +137,9 @@ MagicianBlockchainScan.create()
         .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
         .addEthMonitorEvent(new EventThree()) // 添加 监听事件
         .start();
-
-// TODO 暂时不支持SOL和TRON， 正在开发中......
 ```
 
-### 停止某一个扫块任务
-
-```java
-// 将对象拿到
-MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
-        .setRpcUrl(
-                EthRpcInit.create()
-                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
-        ) // 节点的RPC地址
-        .setScanPeriod(5000) // 间隔多久，扫描下一个区块
-        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
-        .addEthMonitorEvent(new EventOne()) // 添加 监听事件
-        .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
-        .addEthMonitorEvent(new EventThree()); // 添加 监听事件
-
-// 因为start方法没有返回值，所以上面的链式不可以调用start，需要改成用返回的对象来调用
-blockChainScan.start();
-
-// 调用这个方法可以停止这一个扫块任务
-blockChainScan.shutdown();
-```
-
-### 停止所有扫描任务
-
-```java
-// 调用这个方法停止所有任务
-MagicianBlockchainScan.shutdownAll();
-```
-
-### 使用代理访问RPC地址
-
-#### ETH(BSC,PLOYGON 等) 链的设置方法
+#### 使用代理访问RPC地址
 
 ```java
 // 使用 addRpcUrl 方法的另一个重载，传入代理设置即可
@@ -212,13 +175,88 @@ EthRpcInit.create()
         )
 ```
 
-#### SOL, TRON
+### TRON链
+
+#### 创建监听器
+
+条件过滤器还在开发中，可以关注后续更新，call方法会接收到所有扫描到的交易信息，需要您自己判断筛选
+
+```java
+/**
+ * 创建一个类，实现TronMonitorEvent接口即可
+ */
+public class TronEventOne implements TronMonitorEvent {
+
+        /**
+         * transactionModel 对象里包含此条交易的所有信息
+         */
+        @Override
+        public void call(TransactionModel transactionModel) {
+                System.out.println("TRON 成功了！！！");
+                System.out.println("TRON, txID: " + transactionModel.getTronTransactionModel().getTxID());
+        }
+
+}
+```
+
+#### 开启一个扫块任务
+
+下面标出了跟ETH扫块任务的两个区别，除此之外，再无其他区别
+
+```java
+// 初始化线程池，核心线程数必须 >= 全局的扫块的任务数量 + 全局的重试策略的数量
+// 这是一个全局配置，不管你开了几个任务，不管你需要扫描几条链，几种链，都只需要写一次这句代码
+EventThreadPool.init(1);
+
+MagicianBlockchainScan.create()
+        .setRpcUrl(
+                // 跟ETH的区别一，这里需要用TronRpcInit
+                TronRpcInit.create()
+                        .addRpcUrl("https://api.shasta.trongrid.io/wallet")
+        )
+        .addTronMonitorEvent(new TronEventOne()) // 跟ETH的区别二，添加监听器需要用 addTronMonitorEvent
+        .start();
+```
+
+#### 使用代理访问RPC地址
 
 ```java
 开发中......
 ```
 
+### SOLANA链
+
+```java
+开发中......
+```
+
+### 停止某一个扫块任务
+
+三条链都是一样的写法
+
+```java
+// 将对象拿到
+MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // 节点的RPC地址
+        .setScanPeriod(5000) // 间隔多久，扫描下一个区块
+        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
+        .addEthMonitorEvent(new EventOne()) // 添加 监听事件
+        .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
+        .addEthMonitorEvent(new EventThree()); // 添加 监听事件
+
+// 因为start方法没有返回值，所以上面的链式不可以调用start，需要改成用返回的对象来调用
+blockChainScan.start();
+
+// 调用这个方法可以停止这一个扫块任务
+blockChainScan.shutdown();
+```
+
 ### 配置多个RPC URL 实现负载均衡
+
+三条链都是一样的，只是EthRpcInit 需要改成对应的链的类
 
 调用addRpcUrl方法多次，传入多个RPC URL，即可实现负载均衡（轮询）
 
@@ -232,7 +270,7 @@ MagicianBlockchainScan.create()
         ) // 节点的RPC地址
 ```
 
-### 重试策略
+### 重试策略（三条链都是一样的写法）
 
 在符合以下两个条件时，会发生重试，两个条件必须全都符合 才会触发重试
 1. 当前正在扫描的块高 是空的（块不存在 或者 块里面没交易）
@@ -264,12 +302,14 @@ MagicianBlockchainScan.create()
 如果你此时开了一个扫块任务 + 一个 重试策略，那么需要占用两个线程，所以参数必须传2
 
 ```java
-// 初始化线程池，核心线程数必须 >= 扫块的任务数量 + 重试策略的数量
+// 初始化线程池，核心线程数必须 >= 全局的扫块的任务数量 + 全局的重试策略的数量
+// 这是一个全局配置，不管你开了几个任务，不管你需要扫描几条链，几种链，都只需要写一次这句代码
 EventThreadPool.init(2);
 ```
 
 ### InputData 编解码
 
+#### ETH(BSC, POYGAN 等)链
 ```java
 // 编码
 String inputData = EthAbiCodec.getInputData(
@@ -297,7 +337,19 @@ String functionCode = EthAbiCodec.getFunAbiCode(
     );
 ```
 
-### 项目内置了几个functionCode
+#### TRON
+
+```java
+开发中......
+```
+
+#### SOLANA
+
+```java
+开发中......
+```
+
+### 项目内置了几个functionCode（ETH专用）
 
 如果你刚好要监听这几个函数，那么可以直接用，前提是你的合约里的函数必须跟 Openzeppelin 的规范一样，连参数列表的顺序都必须一样
 

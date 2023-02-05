@@ -25,18 +25,16 @@ sidebar: 'false'
 
 <hr/>
 
-除了直接的支持以外，还可以间接的支持一下哦，关注我的微信公众号，或者QQ群
+除了直接的支持以外，还可以间接的支持一下哦，加入我的QQ群，或者电报群一起讨论
 
 <hr/>
 
 <table style="border:0px">
     <tr style="border:0px">
-        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/weixingzh.jpeg" width="200px"/></td>
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/qq.png" width="200px"/></td>
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/tealgram.jpeg" width="200px"/></td>
     </tr>
     <tr style="border:0px; background-color:#ffffff">
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px">微信公众号：Beerus开源网</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">QQ群：773291321</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">电报：<a href="https://t.me/magicianio">https://t.me/magicianio</a></p></td>
     </tr>

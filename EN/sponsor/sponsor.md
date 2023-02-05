@@ -31,12 +31,10 @@ In addition to direct support, you can also indirectly support Oh, follow my WeC
 
 <table style="border:0px">
     <tr style="border:0px">
-        <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/weixingzh.jpeg" width="200px"/></td>
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/qq.png" width="200px"/></td>
         <td style="border:0px;text-align:center"><img src="https://beeruscc.com/source/images/tealgram.jpeg" width="200px"/></td>
     </tr>
     <tr style="border:0px; background-color:#ffffff">
-        <td style="border:0px;text-align:center" valign="top"><p style="width:150px">WeChat Public: Beerus开源网</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">QQGroup: 773291321</p></td>
         <td style="border:0px;text-align:center" valign="top"><p style="width:150px">Telegram: <a href="https://t.me/magicianio">https://t.me/magicianio</a></p></td>
     </tr>

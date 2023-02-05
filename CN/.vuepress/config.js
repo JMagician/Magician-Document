@@ -45,14 +45,14 @@ module.exports = {
           { text: '微博(@Magician开源)', link: 'https://weibo.com/u/5453518101' }
         ]
       },
+      { text: '商业合作', link: '/business/business.md' },
       {
         text: 'Languages',
         items: [
           { text: '简体中文', link: 'https://magician-io.com/cn/' },
           { text: 'English', link: 'https://magician-io.com' }
         ]
-      },
-      { text: 'Golang版本', link: 'https://beeruscc.com' }
+      }
     ],
     sidebar: 'auto'
   }

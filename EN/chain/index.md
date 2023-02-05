@@ -18,7 +18,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -29,11 +29,12 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 </dependency>
 ```
 
-### Create a listener
+### ETH(BSC, Poygan, etc.)
+
+#### Create a listener
 
 You can create multiple listeners and set the listening conditions separately according to your needs
 
-#### ETH(BSC, Poygan, etc.) listener
 ```java
 /**
  * Create a class that implements the EthMonitorEvent interface and that's it!
@@ -117,17 +118,12 @@ public EthMonitorFilter ethMonitorFilter() {
 }
 ```
 
-#### SOL, TRON Chain's Scan Block High feature under development......
-
-```java
-Under Development......
-```
-
-### Start a task that scans the block height
+#### Start a task that scans the block height
 
 ```java
 
-// Initialize the thread pool, the number of core threads must be >= the number of chains you want to scan + retry strategy
+// To initialize the thread pool, the number of core threads must >= the global number of tasks to sweep the block + the global number of retry policies
+// This is a global configuration, no matter how many tasks you open, no matter how many chains you need to scan, how many chains, you only need to write this code once
 EventThreadPool.init(1);
 
 // Open a scan task, if you want to scan multiple chains, you can open multiple tasks, 
@@ -143,42 +139,9 @@ MagicianBlockchainScan.create()
         .addEthMonitorEvent(new EventTwo()) // Add Listening Events
         .addEthMonitorEvent(new EventThree()) // Add Listening Events
         .start();
-
-// TODO SOL and TRON are not supported for now, under development......
 ```
 
-### Stop a particular scan job
-
-```java
-// Get the object to the
-MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
-        .setRpcUrl(
-                EthRpcInit.create()
-                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
-        ) // RPC address of the node
-        .setScanPeriod(5000) // Interval of each round of scanning
-        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
-        .addEthMonitorEvent(new EventOne()) // Add Listening Events
-        .addEthMonitorEvent(new EventTwo()) // Add Listening Events
-        .addEthMonitorEvent(new EventThree()) // Add Listening Events
-
-// Because the start method has no return value, the above chain cannot call start, but needs to be called with the returned object instead
-blockChainScan.start();
-
-// Call this method to stop this one scan task
-blockChainScan.shutdown();
-```
-
-### Stop all scan task
-
-```java
-// Call this method to stop all scan task
-MagicianBlockchainScan.shutdownAll();
-```
-
-### Using a proxy to access RPC addresses
-
-#### ETH(BSC, Poygan, etc.)
+#### Using a proxy to access RPC addresses
 
 ```java
 // Use another overload of the setRpcUrl method and just pass in the proxy settings
@@ -205,8 +168,7 @@ EthRpcInit.create()
                 new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 4780)),
                 (Route route, Response response) -> {
 
-                //设置代理服务器账号密码
-                String credential = Credentials.basic("用户名", "密码");
+                String credential = Credentials.basic("userName", "password");
                 return response.request().newBuilder()
                         .header("Proxy-Authorization", credential)
                         .build();
@@ -214,13 +176,88 @@ EthRpcInit.create()
         )
 ```
 
-#### SOL, TRON
+### TRON
+
+#### Create a listener
+
+Conditional filter is still under development, you can pay attention to the subsequent updates, call method will receive all the scanned transaction information, you need to judge the filter yourself
+
+```java
+/**
+ * Just create a class that implements the TronMonitorEvent interface
+ */
+public class TronEventOne implements TronMonitorEvent {
+
+        /**
+         * The transactionModel object contains all the information about this transaction
+         */
+        @Override
+        public void call(TransactionModel transactionModel) {
+                System.out.println("TRON 成功了！！！");
+                System.out.println("TRON, txID: " + transactionModel.getTronTransactionModel().getTxID());
+        }
+
+}
+```
+
+#### Start a task that scans the block height
+
+Two differences from the ETH scan task are marked below, other than that there are no other differences
+
+```java
+// To initialize the thread pool, the number of core threads must >= the global number of tasks to sweep the block + the global number of retry policies
+// This is a global configuration, no matter how many tasks you open, no matter how many chains you need to scan, how many chains, you only need to write this code once
+EventThreadPool.init(1);
+
+MagicianBlockchainScan.create()
+        .setRpcUrl(
+                // [The difference with ETH 1], here you need to use TronRpcInit
+                TronRpcInit.create()
+                        .addRpcUrl("https://api.shasta.trongrid.io/wallet")
+        )
+        .addTronMonitorEvent(new TronEventOne()) // [The difference with ETH 2], You need to add a listener with the addTronMonitorEvent method
+        .start();
+```
+
+#### Using a proxy to access RPC addresses
 
 ```java
 Under Development......
 ```
 
+### SOLANA
+
+```java
+Under Development......
+```
+
+### Stop a particular scan job
+
+All three chains are written in the same way
+
+```java
+// Get the object to the
+MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // RPC address of the node
+        .setScanPeriod(5000) // Interval of each round of scanning
+        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
+        .addEthMonitorEvent(new EventOne()) // Add Listening Events
+        .addEthMonitorEvent(new EventTwo()) // Add Listening Events
+        .addEthMonitorEvent(new EventThree()) // Add Listening Events
+
+// Because the start method has no return value, the above chain cannot call start, but needs to be called with the returned object instead
+blockChainScan.start();
+
+// Call this method to stop this one scan task
+blockChainScan.shutdown();
+```
+
 ### Configuring multiple RPC URLs to achieve load balancing
+
+All three chains are the same, except that EthRpcInit needs to be changed to the class of the corresponding chain
 
 Call the addRpcUrl method several times and pass in multiple RPC URLs to achieve load balancing (polling)
 
@@ -235,6 +272,8 @@ MagicianBlockchainScan.create()
 ```
 
 ### Retry Strategy
+
+All three chains are written in the same way
 
 Retries will occur when the following two conditions are met, both of which must be met
 1. the block height currently being scanned is empty (the block does not exist or there are no transactions in the block)
@@ -266,10 +305,14 @@ MagicianBlockchainScan.create()
 If you have a scan task + a retry strategy, then two threads are needed, so the parameter must be 2
 
 ```java
+// To initialize the thread pool, the number of core threads must >= the global number of tasks to sweep the block + the global number of retry policies
+// This is a global configuration, no matter how many tasks you open, no matter how many chains you need to scan, how many chains, you only need to write this code once
 EventThreadPool.init(2);
 ```
 
 ### InputData Codec
+
+#### ETH(BSC, Poygan, etc.)
 
 ```java
 // Encoding
@@ -299,7 +342,19 @@ String functionCode = EthAbiCodec.getFunAbiCode(
     );
 ```
 
-### The project has several built-in functionCode
+#### TRON
+
+```java
+Under Development......
+```
+
+#### SOLANA
+
+```java
+Under Development......
+```
+
+### The project has several built-in functionCode(ETH, BSC, Poygan, etc.)
 
 If you need to listen to these functions, then you can use them directly, as long as the functions in your contract have the same specification as Openzeppelin, and even the order of the parameter list must be the same
 

@@ -42,15 +42,15 @@ module.exports = {
               {text: 'Telegram', link: 'https://t.me/magicianio'},
               {text: 'Weibo(@Magician开源)', link: 'https://weibo.com/u/5453518101'}
             ]
-          },
+        },
+        { text: 'Business Cooperation', link: '/business/business.md' },
         {
           text: '语言',
           items: [
             { text: '简体中文', link: 'https://magician-io.com/cn/' },
             { text: 'English', link: 'https://magician-io.com' }
           ]
-        },
-        { text: 'Golang', link: 'https://beeruscc.com' }
+        }
       ],
       sidebar: 'auto'
     }

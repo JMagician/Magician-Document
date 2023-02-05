@@ -2,7 +2,7 @@
 home: true
 heroImage: https://magician-io.com/source/images/logo1.png
 actionText: Video →
-actionLink: https://space.bilibili.com/41981562/channel/series
+actionLink: https://space.bilibili.com/41981562/channel/seriesdetail?sid=2814906&ctype=0
 footer: MIT protocol based open source projects | Email - yuyemail123@gmail.com
 ---
 
