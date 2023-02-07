@@ -1,7 +1,7 @@
 module.exports = {
   title: 'Magician',
   description: 'A Java development toolkit for most blockchain and web development scenarios',
-  base: '/',
+  base: '/en/',
   head: [
     ['meta', { name: 'keywords', content: 'Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,Web' }],
     [
@@ -25,8 +25,7 @@ module.exports = {
             { text: 'Block Chain', link: 'https://github.com/Magician-Blockchain'},
             { text: 'Web', link: 'https://github.com/JMagician'}
           ]
-        },              
-        { text: 'Discussions', link: 'https://github.com/JMagician/Magician/discussions' },
+        },
         {
           text: 'Document',
           items: [
@@ -47,8 +46,8 @@ module.exports = {
         {
           text: '语言',
           items: [
-            { text: '简体中文', link: 'https://magician-io.com/cn/' },
-            { text: 'English', link: 'https://magician-io.com' }
+            { text: '简体中文', link: 'https://magician-io.com' },
+            { text: 'English', link: 'https://magician-io.com/en/' }
           ]
         }
       ],
