@@ -17,7 +17,7 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -70,13 +70,11 @@ public class EventDemo implements EthMonitorEvent {
      */
     @Override
     public void call(TransactionModel transactionModel) {
-        String template = "EventOne 扫描到了, hash:{0}, from:{1}, to: {2}, input: {3}";
-        template = template.replace("{0}", transactionModel.getEthTransactionModel().getBlockHash());
-        template = template.replace("{1}", transactionModel.getEthTransactionModel().getFrom());
-        template = template.replace("{2}", transactionModel.getEthTransactionModel().getTo());
-        template = template.replace("{3}", transactionModel.getEthTransactionModel().getInput());
+        // 符合条件的交易记录
+        EthBlock.TransactionObject transactionObject = transactionModel.getEthTransactionModel().getTransactionObject();
 
-        System.out.println(template);
+        // 本条交易记录所在的块信息
+        EthBlock ethBlock = transactionModel.getEthTransactionModel().getEthBlock();
     }
 }
 ```
