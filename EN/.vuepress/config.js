@@ -39,8 +39,7 @@ module.exports = {
         { text: 'Social Networks', 
             items: [
               {text: 'Telegram', link: 'https://t.me/magicianio'},
-              {text: 'Youtube', link: 'https://www.youtube.com/channel/UCLf2CFbmZKS_DBJy37qt13Q'},
-              {text: 'Weibo(@Magician开源)', link: 'https://weibo.com/u/5453518101'}
+              {text: 'Youtube', link: 'https://www.youtube.com/channel/UCLf2CFbmZKS_DBJy37qt13Q'}
             ]
         },
         { text: 'Business Cooperation', link: '/business/business.md' },

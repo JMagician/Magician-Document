@@ -41,8 +41,7 @@ module.exports = {
         text: '社交平台',
         items: [
           { text: 'Telegram', link: 'https://t.me/magicianio' },
-          { text: 'B站', link: 'https://space.bilibili.com/41981562' },
-          { text: '微博(@Magician开源)', link: 'https://weibo.com/u/5453518101' }
+          { text: 'B站', link: 'https://space.bilibili.com/41981562' }
         ]
       },
       { text: '商业合作', link: '/business/business.md' },
