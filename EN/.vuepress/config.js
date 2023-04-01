@@ -39,7 +39,7 @@ module.exports = {
         { text: 'Social Networks', 
             items: [
               {text: 'Telegram', link: 'https://t.me/magicianio'},
-              {text: 'Youtube', link: 'https://www.youtube.com/channel/UCLf2CFbmZKS_DBJy37qt13Q'}
+              { text: 'Bilibili', link: 'https://space.bilibili.com/41981562' }
             ]
         },
         { text: 'Business Cooperation', link: '/business/business.md' },
