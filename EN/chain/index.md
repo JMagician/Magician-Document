@@ -18,7 +18,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.11</version>
+    <version>1.0.12</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -133,6 +133,7 @@ MagicianBlockchainScan.create()
         ) // RPC address of the node
         .setScanPeriod(5000) // Interval of each round of scanning
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
+        .setEndBlockNumber(BigInteger.valueOf(24318680)) // Stop this task when it reaches this block height(Not set or set to 0 for unrestricted)
         .addEthMonitorEvent(new EventOne()) // Add Listening Events
         .addEthMonitorEvent(new EventTwo()) // Add Listening Events
         .addEthMonitorEvent(new EventThree()) // Add Listening Events
@@ -243,14 +244,39 @@ MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
         .setScanPeriod(5000) // Interval of each round of scanning
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
         .addEthMonitorEvent(new EventOne()) // Add Listening Events
-        .addEthMonitorEvent(new EventTwo()) // Add Listening Events
-        .addEthMonitorEvent(new EventThree()) // Add Listening Events
 
 // Because the start method has no return value, the above chain cannot call start, but needs to be called with the returned object instead
 blockChainScan.start();
 
 // Call this method to stop this one scan task
 blockChainScan.shutdown();
+```
+
+### Stop all scanning jobs
+
+```java
+MagicianBlockchainScan.shutdownAll();
+```
+
+### Get the maximum block height that has been scanned
+
+```java
+// Get the object to the
+MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // RPC address of the node
+        .setScanPeriod(5000) // Interval of each round of scanning
+        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // From which block height to start scanning
+        .addEthMonitorEvent(new EventOne()) // Add Listening Events
+
+// Because the start method has no return value, the above chain cannot call start, but needs to be called with the returned object instead
+blockChainScan.start();
+
+// Call this method to get the maximum block height that has been scanned by the current task
+// There is some differences, because at the moment you get it, the scanning task may have scanned several new blocks
+blockChainScan.getCurrentBlockHeight();
 ```
 
 ### Configuring multiple RPC URLs to achieve load balancing
@@ -398,7 +424,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -447,6 +473,7 @@ SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
                         .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
                         .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
                         .setNonce(new BigInteger("100")), // nonce，If you want to use the default value, you can pass null directly or leave this parameter out.
+                        .setChainId(97)
                 EthAbiCodecTool.getInputData(
                         "transfer", // Name of the method to be called
                         new Address(toAddress), // Parameter 1

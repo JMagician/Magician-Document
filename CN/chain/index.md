@@ -17,7 +17,7 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Scanning</artifactId>
-    <version>1.0.11</version>
+    <version>1.0.12</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -81,7 +81,7 @@ public class EventDemo implements EthMonitorEvent {
 
 #### InputDataFilter 详解
 
-如果你想监控，某合约内的某函数 被调用的交易
+如果你想监控某合约内的某函数, 被调用的交易
 
 ```java
 public EthMonitorFilter ethMonitorFilter() {
@@ -131,6 +131,7 @@ MagicianBlockchainScan.create()
         ) // 节点的RPC地址
         .setScanPeriod(5000) // 间隔多久，扫描下一个区块
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
+        .setEndBlockNumber(BigInteger.valueOf(24318680)) // 扫描到哪个块高就停止这个任务（不设置，或者设置为0，代表不限制）
         .addEthMonitorEvent(new EventOne()) // 添加 监听事件
         .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
         .addEthMonitorEvent(new EventThree()) // 添加 监听事件
@@ -242,14 +243,39 @@ MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
         .setScanPeriod(5000) // 间隔多久，扫描下一个区块
         .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
         .addEthMonitorEvent(new EventOne()) // 添加 监听事件
-        .addEthMonitorEvent(new EventTwo()) // 添加 监听事件
-        .addEthMonitorEvent(new EventThree()); // 添加 监听事件
 
-// 因为start方法没有返回值，所以上面的链式不可以调用start，需要改成用返回的对象来调用
+// 因为start方法没有返回值，为了能获取blockChainScan对象，所以上面的链式不可以调用start，需要改成用返回的对象来调用
 blockChainScan.start();
 
 // 调用这个方法可以停止这一个扫块任务
 blockChainScan.shutdown();
+```
+
+### 停止所有扫块任务
+
+```java
+MagicianBlockchainScan.shutdownAll();
+```
+
+### 获取当前任务扫描到的最大块高
+
+```java
+// 将对象拿到
+MagicianBlockchainScan blockChainScan = MagicianBlockchainScan.create()
+        .setRpcUrl(
+                EthRpcInit.create()
+                        .addRpcUrl("https://data-seed-prebsc-1-s1.binance.org:8545")
+        ) // 节点的RPC地址
+        .setScanPeriod(5000) // 间隔多久，扫描下一个区块
+        .setBeginBlockNumber(BigInteger.valueOf(24318610)) // 从哪个块高开始扫描
+        .addEthMonitorEvent(new EventOne()) // 添加 监听事件
+
+// 因为start方法没有返回值，为了能获取blockChainScan对象，所以上面的链式不可以调用start，需要改成用返回的对象来调用
+blockChainScan.start();
+
+// 调用这个方法可以获取当前任务已经扫描到的最大块高
+// 有一定的误差，因为在你获取的这一瞬间，扫描任务可能又扫描到好几个新块高了
+blockChainScan.getCurrentBlockHeight();
 ```
 
 ### 配置多个RPC URL 实现负载均衡
@@ -393,7 +419,7 @@ Magician-ContractsTools是一个用于调用智能合约的工具包，你可以
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -443,6 +469,7 @@ SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
                         .setGasPrice(new BigInteger("1000")) // gasPrice，如果想用默认值 可以直接传null，或者不传这个参数
                         .setGasLimit(new BigInteger("800000")) // gasLimit，如果想用默认值 可以直接传null，或者不传这个参数
                         .setNonce(new BigInteger("100")), // 自定义nonce，如果想要默认值 可以直接传null，或者不传这个参数
+                        .setChainId(97) // 设置链ID
                 EthAbiCodecTool.getInputData(
                         "transfer", // 要调用的方法名称
                         new Address(toAddress), // 方法的参数，如果有多个，可以继续传入下一个参数
