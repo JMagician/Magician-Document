@@ -29,7 +29,7 @@ It is planned to support three chains, ETH (BSC, POLYGON, etc.), SOL and TRON
 </dependency>
 ```
 
-### ETH(BSC, Poygan, etc.)
+### ETH(BSC, Polygan, Arb etc.)
 
 #### Create a listener
 

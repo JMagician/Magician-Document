@@ -28,7 +28,7 @@ Magician-Scanning是一个用Java开发的扫描区块链的工具包，当我�
 </dependency>
 ```
 
-### ETH(BSC, POYGAN 等)链
+### ETH(BSC, POLYGAN, ARB 等)链
 
 #### 创建监听器
 
