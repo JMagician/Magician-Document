@@ -3,14 +3,14 @@ module.exports = {
   description: '一套Java开发的工具包，可以满足区块链 和 Web开发的大部分场景',
   base: '/',
   head: [
-    ['meta', { name: 'keywords', content: 'Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,Web' }],
+    ['meta', { name: 'keywords', content: 'Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,以太坊,扫块,ETH,ARB,arb,eth,blockchain' }],
     [
       'script', {},
       `
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?c99e92fd72d5a319e1864652d6a834f7";
+        hm.src = "https://hm.baidu.com/hm.js?4a88f95406930c3f864feabd8e0b5c12";
         var s = document.getElementsByTagName("script")[0]; 
         s.parentNode.insertBefore(hm, s);
       })();
