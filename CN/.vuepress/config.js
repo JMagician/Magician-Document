@@ -39,8 +39,9 @@ module.exports = {
       },
       { text: '赞助', 
         items: [
+          {text: '微信支付宝', link: '/sponsor/sponsor.md' },
           {text: '爱发电', link: 'https://afdian.com/a/magicianio'},
-          {text: '微信支付宝', link: '/sponsor/sponsor.md' }
+          {text: 'Paypal', link: 'https://www.paypal.com/paypalme/yuye666' }
         ]
       },
       // {
