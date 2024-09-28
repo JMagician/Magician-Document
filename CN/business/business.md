@@ -15,5 +15,4 @@
 
 ## 邮箱地址
 
-- gmail: yuyemail123@gmail.com
-- 网易邮箱：yuyemail@163.com
+- yuyemail@163.com

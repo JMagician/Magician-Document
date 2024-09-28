@@ -24,34 +24,40 @@ module.exports = {
         text: 'Github',
         items: [
           { text: '区块链', link: 'https://github.com/Magician-Blockchain' },
-          { text: 'Web', link: 'https://github.com/JMagician' }
+          { text: '工具包与Web', link: 'https://github.com/JMagician' }
         ]
       },
       {
         text: '文档',
         items: [
           { text: '区块链', link: '/chain/index.md' },
+          { text: 'Magician-Concurrent', link: '/concurrent/index.md' },
           { text: 'Magician', link: '/web/index.md' },
           { text: 'Magician-JDBC', link: '/db/index.md' },
           { text: 'Magician-Web', link: '/web/magician-web.md' }
         ]
       },
-      { text: '赞助', link: '/sponsor/sponsor.md' },
-      {
-        text: '社交平台',
+      { text: '赞助', 
         items: [
-          { text: 'Telegram', link: 'https://t.me/magicianio' },
-          { text: 'B站', link: 'https://space.bilibili.com/41981562' }
+          {text: '爱发电', link: 'https://afdian.com/a/magicianio'},
+          {text: '微信支付宝', link: '/sponsor/sponsor.md' }
         ]
       },
-      { text: '商业合作', link: '/business/business.md' },
-      {
-        text: 'Languages',
-        items: [
-          { text: '简体中文', link: 'https://magician-io.com' },
-          { text: 'English', link: 'https://magician-io.com/en/' }
-        ]
-      }
+      // {
+      //   text: '社交平台',
+      //   items: [
+      //     { text: 'Telegram', link: 'https://t.me/magicianio' },
+      //     { text: 'B站', link: 'https://space.bilibili.com/41981562' }
+      //   ]
+      // },
+      { text: '商业合作', link: '/business/business.md' }
+      // ,{
+      //   text: 'Languages',
+      //   items: [
+      //     { text: '简体中文', link: 'https://magician-io.com' },
+      //     { text: 'English', link: 'https://magician-io.com/en/' }
+      //   ]
+      // }
     ],
     sidebar: 'auto'
   }

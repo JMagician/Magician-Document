@@ -418,7 +418,7 @@ String token = jwtManager.createToken(要存入的对象);
 ### 引入依赖
 ```xml
 <dependency>
-    <groupId>com.magician.containers</groupId>
+    <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Containers</artifactId>
     <version>1.0.1</version>
 </dependency>
@@ -527,7 +527,7 @@ public class DemoBeanTwo {
 ### 引入依赖
 ```xml
 <dependency>
-    <groupId>com.magician.configure</groupId>
+    <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-Configure</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -567,5 +567,4 @@ String userName = Environment.get("userName");
 ## 更多功能
 
 - [点击此处 -> 跳转到数据库操作](/db/index.md)
-- [点击此处 -> 跳转到Magician-Web](magician-web.md)
 
