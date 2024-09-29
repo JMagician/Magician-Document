@@ -49,13 +49,15 @@ MagicianConcurrent.getConcurrentTaskSync()
                 .start();
 ```
 
-详细说明
+里面的每一个任务都是并发执行的，但是这个整体是同步的，而同步
 
 
 
 ## 并发处理List里的元素
 
 ### 同步执行
+
+每个元素并发执行
 
 ```java
 // 假如有一个List需要并发处理里面的元素
@@ -69,7 +71,11 @@ MagicianConcurrent.getConcurrentListSync()
             System.out.println(data);
         
         }, 10, 1, TimeUnit.MINUTES);
+```
 
+每一组并发执行
+
+```java
 // 也可以用syncGroupRunner方法，每个参数的具体含义可以参考文档
 MagicianConcurrent.getConcurrentListSync()
         .syncGroupRunner(dataList, data -> {
@@ -81,6 +87,8 @@ MagicianConcurrent.getConcurrentListSync()
 ```
 
 ### 异步执行
+
+每个元素并发执行
 
 ```java
 // 假如有一个List需要并发处理里面的元素
@@ -94,8 +102,11 @@ MagicianConcurrent.getConcurrentListAsync(1, 10, 1, TimeUnit.MINUTES)
             System.out.println(data);
     
         }, 10, 1, TimeUnit.MINUTES);
+```
 
+每一组并发执行
 
+```java
 // 也可以用asyncGroupRunner方法，每个参数的具体含义可以参考文档
 MagicianConcurrent.getConcurrentListAsync(1, 10, 1, TimeUnit.MINUTES)
         .asyncGroupRunner(dataList, data -> {
