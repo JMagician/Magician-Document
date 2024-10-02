@@ -1,6 +1,6 @@
 # Magician文档
 
-## Magician
+## Magician-Http
 
 ### 运行环境
 
