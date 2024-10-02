@@ -96,9 +96,11 @@ MagicianConcurrent.getConcurrentCollectionSync()
 MagicianConcurrent.getConcurrentCollectionSync()
         .syncGroupRunner(dataList, data -> {
 
-            // 这里可以拿到每一组的元素，进行处理
-            // 这个data就是每一组List，可以自己迭代处理
-            System.out.println(data);
+            // 这里是每一组List
+            for(String item : data){
+                // 这里可以拿到List里的元素，进行处理
+                System.out.println(data);
+            }
         
         }, 
         10, // 每组多少条元素
@@ -157,8 +159,11 @@ ConcurrentCollectionAsync concurrentCollectionAsync = MagicianConcurrent.Concurr
 
 concurrentCollectionAsync.asyncRunner(dataList, data -> {
 
-            // 这里可以拿到List里的元素，进行处理
-            System.out.println(data);
+            // 这里是每一组List
+            for(String item : data){
+                // 这里可以拿到List里的元素，进行处理
+                System.out.println(data);
+            }
     
         }, 
         10, // 每组多少条元素
@@ -213,8 +218,11 @@ MagicianConcurrent.ConcurrentCollectionAsync(
                 TimeUnit.MINUTES // 空闲时间单位
                 .asyncGroupRunner(dataList, data -> {
         
-            // 这里可以拿到List里的元素，进行处理
-            System.out.println(data);
+            // 这里是每一组List
+            for(String item : data){
+                // 这里可以拿到List里的元素，进行处理
+                System.out.println(data);
+            }
         
         }, 
         10, // 每组多少条元素
@@ -254,8 +262,12 @@ MagicianConcurrent.getConcurrentMapSync()
 MagicianConcurrent.getConcurrentMapSync()
         .syncGroupRunner(dataMap, data -> {
 
-            // 这里可以拿到每一组Map进行处理
-            System.out.println(data);
+            // 这里是每一组Map
+            for(Map.Entry<String, Object> entry : data.entrySet()){
+                // 这里可以拿到Map里的每一个元素
+                System.out.println(entry.getKey());
+                System.out.println(entry.getValue());
+            }
         
         }, 10, 1, TimeUnit.MINUTES);
 ```
@@ -294,8 +306,12 @@ MagicianConcurrent.getConcurrentMapAsync(
                 TimeUnit.MINUTES
                 ).asyncGroupRunner(dataMap, data -> {
         
-            // 这里可以拿到每一组Map进行处理
-            System.out.println(data);
+            // 这里是每一组Map
+            for(Map.Entry<String, Object> entry : data.entrySet()){
+                // 这里可以拿到Map里的每一个元素
+                System.out.println(entry.getKey());
+                System.out.println(entry.getValue());
+            }
         
         }, 10, 1, TimeUnit.MINUTES);
 ```
@@ -366,7 +382,7 @@ MagicianConcurrent.getProducerAndConsumerManager()
                          *
                          * 第二种：等消费者把你推给他的数据消费完了，再推送下一轮，而我们就是采用的这种
                          *      如果你想用这种方式，那么你不需要再写其他的任何逻辑，只需要将上面提到的getLoop方法重写一下，并返回true即可
-                         *      当你设置为true以后，生产者在推送完一轮后会不断地监视消费者，当发现了空闲的消费者才会推送下一轮数据，并且数据只会推送给这个空闲的消费者
+                         *      当你设置为true以后，生产者在推送完一轮后会不断地监视消费者，当发现了空闲的消费者才会推送下一轮数据，并且数据只会推送给这几个空闲的消费者
                          *
                          * 如果你想等所有消费者都空闲了以后再推送下一轮，而不是发现一个空闲的就推送一轮
                          * 那么你可以重写上面提到的getAllFree方法，返回true即可
