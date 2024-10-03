@@ -60,15 +60,15 @@ MagicianConcurrent.getConcurrentTaskSync()
 
 ### 同步执行
 
+假如有一个List需要并发处理里面的元素
+
 ```java
-// 假如有一个List需要并发处理里面的元素
 List<String> dataList = new ArrayList<>();
 ```
 
-#### 每个元素并发执行
+只需要将他传入syncRunner方法即可
 
 ```java
-// 只需要将他传入syncRunner方法即可
 MagicianConcurrent.getConcurrentCollectionSync()
         .syncRunner(dataList, data -> {
 
@@ -89,7 +89,7 @@ MagicianConcurrent.getConcurrentCollectionSync()
 
 需要等一组处理完了，才会处理下一组，但是有时候我们不想这么死板的等待，所以可以设置一个超时时间，超过了这个期限就不等了，直接进行下一组，所以这里的最后两个参数就是用来设置这个期限的。
 
-#### 每一组并发执行
+#### 也可以让每一组单独占一个线程
 
 ```java
 // 也可以用syncGroupRunner方法
@@ -255,7 +255,7 @@ MagicianConcurrent.getConcurrentMapSync()
         }, 10, 1, TimeUnit.MINUTES);
 ```
 
-每一组并发执行
+#### 每一组并发执行
 
 ```java
 // 也可以用syncGroupRunner方法
