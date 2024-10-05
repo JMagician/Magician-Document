@@ -302,5 +302,4 @@ MagicianConcurrent.getProducerAndConsumerManager()
                     }
                 })
                 .start();
-    }
 ```
