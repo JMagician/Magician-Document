@@ -1,16 +1,32 @@
 ---
 home: true
 heroImage: https://magician-io.com/source/images/logo1.png
-actionText: 视频演示 →
-actionLink: https://www.bilibili.com/video/BV1St19YpEXs
+actionText: 文档 →
+actionLink: /dataprocessing/index.md
 footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@163.com
 ---
 
-<h2 style="margin:0px;">工具包</h2>
+<h2 style="margin:0px;">三大核心</h2>
 <div class="features" style="border:0px;margin-top:0px;padding-top:0px;">
-  <div class="feature">
-    <h2>Magician-Concurrent</h2>
-    <p>Magician-Concurrent 是一个并发编程工具包，当你需要并发执行某些代码的时候，不需要自己创建和管理线程，除此之外里面还提供了生产者与消费者模型</p>
+<div class="feature">
+  <h2>集合处理</h2>
+  <p>通过分组+多线程的方式对集合元素进行处理，线程数量完全可控，可以有效提高处理集合元素的效率</p>
+</div>
+<div class="feature">
+  <h2>并发任务</h2>
+  <p>
+    对于需要并发处理的多个任务，不需要自己创建与管理线程，只需要专注在业务逻辑上
+  </p>
+</div>
+<div class="feature">
+  <h2>生产者与消费者模型</h2>
+  <p>
+    采用多对多模型，多个生产者可以对应多个消费者，这样的对应关系为一组，而这样的组合可以创建多个，并且可以有效避免队列积压
+  </p>
+</div>
+  <!-- <div class="feature">
+    <h2>Magician-DataProcessing</h2>
+    <p>Magician-DataProcessing 是一个数据处理框架，里面提供了对集合数据的并发处理，生产者与消费者模型，以及并发处理任务等功能</p>
   </div>
   <div class="feature">
     <h2>Magician-Scanning</h2>
@@ -23,7 +39,7 @@ footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@16
     <p>
       Magician-ContractsTools是一个用于调用智能合约的工具包，你可以非常容易地在Java程序中调用智能合约进行查询和写入操作。
     </p>
-  </div>
+  </div> -->
   <!-- <div class="feature">
     <h2>Magician-Containers</h2>
     <p>容器管理模块，可以很方便的对项目中的bean进行管理，当Bean被管理起来以后就可以绑定一些功能上去了，目前绑定的功能有， AOP 和 定时任务</p>
@@ -39,7 +55,7 @@ footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@16
     </p>
   </div> -->
 </div>
-<h2 style="margin:0px;">Web开发</h2>
+<!-- <h2 style="margin:0px;">Web开发</h2>
 <div class="features" style="border:0px;margin-top:0px;padding-top:0px;">
   <div class="feature">
     <h2>Magician-Http</h2>
@@ -53,22 +69,22 @@ footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@16
     <h2>Magician-JDBC</h2>
     <p>一个数据库操作框架，支持多数据源，事务管理，分页查询，单表操作无SQL，复杂操作可以自己写SQL，支持实体参数，支持{}和?占位符</p>
   </div>
-</div>
+</div> -->
 
-<h1 style="width:100%;text-align:center;">Magician-Concurrent</h1>
+<h1 style="width:100%;text-align:center;">Magician-DataProcessing</h1>
 
-## 遇到的问题一
+## 集合处理
 
 如果我们拿到了一个集合，需要根据里面的每一条数据去做相应的业务逻辑，那么我们一般有两种做法：
 
-1. 迭代一条一条的处理
+1. 迭代一条一条地处理
 2. 迭代开启多线程处理
 
 如果数据量很少的情况下，这两者都是一个不错的办法，但如果数据量高达成千上万的时候，这两者就都不是一个好办法了，前者会消耗太多的时间，而后者会开启太多的线程.
 
 所以在处理的时候我们虽然还是会采用多线程，但是需要花时间精力去设计，让速度既能比一条一条处理要高，又不能开启太多的线程，有时候我们还不能异步处理，需要等所有线程结束了才能往下走。
 
-## 我们可以看一下Magician-Concurrent是如何处理的
+### 我们可以看一下Magician-DataProcessing是如何处理的
 
 假如有一个List需要并发处理里面的元素
 
@@ -80,7 +96,7 @@ List<String> dataList = new ArrayList<>();
 
 ```java
 // 只需要将他传入syncRunner方法即可
-MagicianConcurrent.getConcurrentCollectionSync()
+MagicianDataProcessing.getConcurrentCollectionSync()
         .syncRunner(dataList, data -> {
 
             // 这里可以拿到List里的元素，进行处理
@@ -98,7 +114,7 @@ MagicianConcurrent.getConcurrentCollectionSync()
 
 ```java
 // 也可以用syncGroupRunner方法
-MagicianConcurrent.getConcurrentCollectionSync()
+MagicianDataProcessing.getConcurrentCollectionSync()
         .syncGroupRunner(dataList, data -> {
 
             // 这里是每一组List
@@ -114,16 +130,16 @@ MagicianConcurrent.getConcurrentCollectionSync()
         );
 ```
 
-## 遇到的问题二
+## 并发任务
 
 有时候我们会遇到这样的业务逻辑：在同一条业务线里需要做多件事，但是这些事之间没有因果关系，不需要等前一个完成再去做下一个。
 
 面对这样的情况，我们可以采用并发的方式将这多件事一起处理掉，如果我们自己去开启线程，管理线程，设置等待，本身并没啥问题，但如果项目里这样的情况多了以后，就会出现大量冗余的代码。
 
-## 所以Magician-Concurrent将他封装了
+### 所以Magician-DataProcessing将他封装了
 
 ```java
-MagicianConcurrent.getConcurrentTaskSync()
+MagicianDataProcessing.getConcurrentTaskSync()
                 .setTimeout(1000) // 超时时间
                 .setTimeUnit(TimeUnit.MILLISECONDS) // 超时时间的单位
                 .add(() -> { // 添加一个任务
@@ -153,15 +169,15 @@ MagicianConcurrent.getConcurrentTaskSync()
                 .start();
 ```
 
-## 遇到的问题三
+## 生产者与消费者模型
 
-当我们在使用生产者与消费者模型的时候，如果不做一些处理，那么很大概率会出现一个问题，如果生产者不管不顾的向消费者推送，而消费者的消费能力又跟不上生产速度，那么很自然的会出现消费者队列积压。
+当我们在使用生产者与消费者模型的时候，如果不做一些处理，那么很大概率会出现一个问题，如果生产者不管不顾的向消费者推送，而消费者的消费能力又跟不上生产速度，那么很自然的会出现消费者队列积压，造成内存问题。
 
 这样的积压如果时间久了又有可能会引发数据时效性的问题，可能你推送给消费者的时候，这条数据需要处理，但是等到被消费的时候又不需要处理了，这样就容易出现数据错乱的问题。
 
 如果我们加大消费者的数量，又会在一定程度上增加线程数。
 
-## Magician-Concurrent采用的是限制生产速度的方式来解决
+### Magician-DataProcessing采用的是限制生产速度的方式来解决
 
 当生产者生产完一批数据后，会不断地监视消费者，当发现了空闲的消费者才会生产和推送下一轮数据，并且数据只会推送给这几个空闲的消费者。
 
@@ -308,7 +324,7 @@ public class DemoConsumer extends MagicianConsumer {
 ```java
 // 创建一组生产者与消费者，而这样组可以创建无限个
 // 每一组的生产者都只会把数据推送给同一组的消费者
-MagicianConcurrent.getProducerAndConsumerManager()
+MagicianDataProcessing.getProducerAndConsumerManager()
                 .addProducer(new DemoProducer()) // 添加一个生产者（可以添加多个）
                 .addConsumer(new DemoConsumer()) // 添加一个消费者（可以添加多个）
                 .start();

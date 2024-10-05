@@ -1,6 +1,6 @@
-# Magician-Concurrent
+# Magician-DataProcessing
 
-Magician-Concurrent 是一个并发编程工具包，当你需要并发执行某些代码的时候，不需要自己创建和管理线程，除此之外里面还提供了生产者与消费者模型
+Magician-DataProcessing 是一个用Java开发的数据处理框架，支持并发处理以及生产者与消费者模型
 
 ## 初始化配置
 
@@ -9,7 +9,7 @@ Magician-Concurrent 是一个并发编程工具包，当你需要并发执行某
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-Concurrent</artifactId>
+    <artifactId>Magician-DataProcessing</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -17,7 +17,7 @@ Magician-Concurrent 是一个并发编程工具包，当你需要并发执行某
 ## 并发处理任务
 
 ```java
-MagicianConcurrent.getConcurrentTaskSync()
+MagicianDataProcessing.getConcurrentTaskSync()
                 .setTimeout(1000) // 超时时间
                 .setTimeUnit(TimeUnit.MILLISECONDS) // 超时时间的单位
                 .add(() -> { // 添加一个任务
@@ -69,7 +69,7 @@ List<String> dataList = new ArrayList<>();
 只需要将他传入syncRunner方法即可
 
 ```java
-MagicianConcurrent.getConcurrentCollectionSync()
+MagicianDataProcessing.getConcurrentCollectionSync()
         .syncRunner(dataList, data -> {
 
             // 这里可以拿到List里的元素，进行处理
@@ -93,7 +93,7 @@ MagicianConcurrent.getConcurrentCollectionSync()
 
 ```java
 // 也可以用syncGroupRunner方法
-MagicianConcurrent.getConcurrentCollectionSync()
+MagicianDataProcessing.getConcurrentCollectionSync()
         .syncGroupRunner(dataList, data -> {
 
             // 这里是每一组List
@@ -119,6 +119,8 @@ MagicianConcurrent.getConcurrentCollectionSync()
 
 其实就是将上面【同步处理】的代码放到了一个线程里，内部处理依然是上面【同步处理】的逻辑，但是这整个代码块将会异步执行，不需要等在这。所以个别相同的参数就不再重复解释了。
 
+注：异步执行，必须手动关闭线程池。
+
 ```java
 // 假如有一个List需要并发处理里面的元素
 List<String> dataList = new ArrayList<>();
@@ -128,7 +130,7 @@ List<String> dataList = new ArrayList<>();
 
 ```java
 // 只需要将他传入asyncRunner方法即可
-MagicianConcurrent.ConcurrentCollectionAsync(
+MagicianDataProcessing.ConcurrentCollectionAsync(
                 1, // 核心线程数
                 1, // 最大线程数
                 1, // 线程空闲时间
@@ -150,7 +152,7 @@ ConcurrentCollectionAsync里的参数其实就是线程池的参数，除了上�
 每调用一次asyncRunner都会占用一个线程，而这些线程都是由一个线程池在管理。
 
 ```java
-ConcurrentCollectionAsync concurrentCollectionAsync = MagicianConcurrent.ConcurrentCollectionAsync(
+ConcurrentCollectionAsync concurrentCollectionAsync = MagicianDataProcessing.ConcurrentCollectionAsync(
                 1, // 核心线程数
                 1, // 最大线程数
                 1, // 线程空闲时间
@@ -211,7 +213,7 @@ ThreadPoolExecutor threadPoolExecutor = concurrentCollectionAsync.getPoolExecuto
 
 ```java
 // 也可以用asyncGroupRunner方法，每个参数的具体含义可以参考文档
-MagicianConcurrent.ConcurrentCollectionAsync(
+MagicianDataProcessing.ConcurrentCollectionAsync(
                 1, // 核心线程数
                 1, // 最大线程数
                 1, // 线程空闲时间
@@ -245,7 +247,7 @@ Map的逻辑跟Collection一模一样，只不过是传入的集合变成了Map�
 Map<String, Object> dataMap = new HashMap<>();
 
 // 只需要将他传入syncRunner方法即可
-MagicianConcurrent.getConcurrentMapSync()
+MagicianDataProcessing.getConcurrentMapSync()
         .syncRunner(dataMap, (key, value) -> {
 
             // 这里可以拿到Map里的元素，进行处理
@@ -259,7 +261,7 @@ MagicianConcurrent.getConcurrentMapSync()
 
 ```java
 // 也可以用syncGroupRunner方法
-MagicianConcurrent.getConcurrentMapSync()
+MagicianDataProcessing.getConcurrentMapSync()
         .syncGroupRunner(dataMap, data -> {
 
             // 这里是每一组Map
@@ -274,6 +276,8 @@ MagicianConcurrent.getConcurrentMapSync()
 
 ### 异步执行
 
+异步执行，必须手动关闭线程池。
+
 #### 每个元素并发执行
 
 ```java
@@ -281,7 +285,7 @@ MagicianConcurrent.getConcurrentMapSync()
 Map<String, Object> dataMap = new HashMap<>();
 
 // 只需要将他传入asyncRunner方法即可
-MagicianConcurrent.getConcurrentMapAsync(
+MagicianDataProcessing.getConcurrentMapAsync(
                 1,
                 1,
                 1,
@@ -299,7 +303,7 @@ MagicianConcurrent.getConcurrentMapAsync(
 
 ```java
 // 也可以用asyncGroupRunner方法
-MagicianConcurrent.getConcurrentMapAsync(
+MagicianDataProcessing.getConcurrentMapAsync(
                 1,
                 1,
                 1,
@@ -463,7 +467,7 @@ public class DemoConsumer extends MagicianConsumer {
 ```java
 // 创建一组生产者与消费者，而这样组可以创建无限个
 // 每一组的生产者都只会把数据推送给同一组的消费者
-MagicianConcurrent.getProducerAndConsumerManager()
+MagicianDataProcessing.getProducerAndConsumerManager()
                 .addProducer(new DemoProducer()) // 添加一个生产者（可以添加多个）
                 .addConsumer(new DemoConsumer()) // 添加一个消费者（可以添加多个）
                 .start();
