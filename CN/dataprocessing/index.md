@@ -10,7 +10,7 @@ Magician-DataProcessing 是一个用Java开发的数据处理框架，支持并�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-DataProcessing</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -117,9 +117,7 @@ MagicianDataProcessing.getConcurrentCollectionSync()
 
 ### 异步执行
 
-其实就是将上面【同步处理】的代码放到了一个线程里，内部处理依然是上面【同步处理】的逻辑，但是这整个代码块将会异步执行，不需要等在这。所以个别相同的参数就不再重复解释了。
-
-注：异步执行，必须手动关闭线程池。
+其实就是将上面【同步执行】的代码放到了一个线程里，内部处理依然是上面【同步执行】的逻辑，但是这整个代码块将会异步执行，不需要等在这。所以个别相同的参数就不再重复解释了。
 
 ```java
 // 假如有一个List需要并发处理里面的元素
@@ -130,12 +128,7 @@ List<String> dataList = new ArrayList<>();
 
 ```java
 // 只需要将他传入asyncRunner方法即可
-MagicianDataProcessing.ConcurrentCollectionAsync(
-                1, // 核心线程数
-                1, // 最大线程数
-                1, // 线程空闲时间
-                TimeUnit.MINUTES // 空闲时间单位
-                .asyncRunner(dataList, data -> {
+MagicianDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data -> {
 
             // 这里可以拿到List里的元素，进行处理
             System.out.println(data);
@@ -144,22 +137,14 @@ MagicianDataProcessing.ConcurrentCollectionAsync(
         10, // 每组多少条元素
         1, // 每组之间同步等待多久
         TimeUnit.MINUTES // 等待的时间单位
-        );
+        )
+        .start();// 注意，异步执行需要调用start方法
 ```
 
-ConcurrentCollectionAsync里的参数其实就是线程池的参数，除了上面这种写法，还可以这样写。
-
-每调用一次asyncRunner都会占用一个线程，而这些线程都是由一个线程池在管理。
+还可以这样写
 
 ```java
-ConcurrentCollectionAsync concurrentCollectionAsync = MagicianDataProcessing.ConcurrentCollectionAsync(
-                1, // 核心线程数
-                1, // 最大线程数
-                1, // 线程空闲时间
-                TimeUnit.MINUTES // 空闲时间单位
-                );
-
-concurrentCollectionAsync.asyncRunner(dataList, data -> {
+MagicianDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data -> {
 
             // 这里是每一组List
             for(String item : data){
@@ -171,9 +156,7 @@ concurrentCollectionAsync.asyncRunner(dataList, data -> {
         10, // 每组多少条元素
         1, // 每组之间同步等待多久
         TimeUnit.MINUTES // 等待的时间单位
-        );
-
-concurrentCollectionAsync.asyncRunner(dataList2, data -> {
+        ).asyncRunner(dataList2, data -> {
 
             // 这里可以拿到List里的元素，进行处理
             System.out.println(data);
@@ -182,9 +165,7 @@ concurrentCollectionAsync.asyncRunner(dataList2, data -> {
         10, // 每组多少条元素
         1, // 每组之间同步等待多久
         TimeUnit.MINUTES // 等待的时间单位
-        );
-
-concurrentCollectionAsync.asyncRunner(dataList3, data -> {
+        ).asyncRunner(dataList3, data -> {
 
             // 这里可以拿到List里的元素，进行处理
             System.out.println(data);
@@ -193,32 +174,15 @@ concurrentCollectionAsync.asyncRunner(dataList3, data -> {
         10, // 每组多少条元素
         1, // 每组之间同步等待多久
         TimeUnit.MINUTES // 等待的时间单位
-        );
-```
-
-用这个方法可以管理线程池
-
-```java
-// 关闭线程池
-concurrentCollectionAsync.shutdown();
-
-// 立刻关闭线程池
-concurrentCollectionAsync.shutdownNow();
-
-// 获取线程池
-ThreadPoolExecutor threadPoolExecutor = concurrentCollectionAsync.getPoolExecutor();
+        )
+        .start(); // 一样要调用start方法
 ```
 
 #### 每一组并发执行
 
 ```java
 // 也可以用asyncGroupRunner方法，每个参数的具体含义可以参考文档
-MagicianDataProcessing.ConcurrentCollectionAsync(
-                1, // 核心线程数
-                1, // 最大线程数
-                1, // 线程空闲时间
-                TimeUnit.MINUTES // 空闲时间单位
-                .asyncGroupRunner(dataList, data -> {
+MagicianDataProcessing.ConcurrentCollectionAsync().asyncGroupRunner(dataList, data -> {
         
             // 这里是每一组List
             for(String item : data){
@@ -230,6 +194,8 @@ MagicianDataProcessing.ConcurrentCollectionAsync(
         10, // 每组多少条元素
         1, // 每组之间同步等待多久
         TimeUnit.MINUTES // 等待的时间单位
+        )
+        .start(); // 一样要调用start方法
 ```
 
 同上
@@ -276,8 +242,6 @@ MagicianDataProcessing.getConcurrentMapSync()
 
 ### 异步执行
 
-异步执行，必须手动关闭线程池。
-
 #### 每个元素并发执行
 
 ```java
@@ -285,30 +249,25 @@ MagicianDataProcessing.getConcurrentMapSync()
 Map<String, Object> dataMap = new HashMap<>();
 
 // 只需要将他传入asyncRunner方法即可
-MagicianDataProcessing.getConcurrentMapAsync(
-                1,
-                1,
-                1,
-                TimeUnit.MINUTES
-                ).asyncRunner(dataMap, (key, value) -> {
+MagicianDataProcessing.getConcurrentMapAsync().asyncRunner(dataMap, (key, value) -> {
 
             // 这里可以拿到Map里的元素，进行处理
             System.out.println(key);
             System.out.println(value);
     
-        }, 10, 1, TimeUnit.MINUTES);
+        }, 
+        10, 
+        1, 
+        TimeUnit.MINUTES
+        )
+        .start(); // 一样要调用start方法
 ```
 
 #### 每一组并发执行
 
 ```java
 // 也可以用asyncGroupRunner方法
-MagicianDataProcessing.getConcurrentMapAsync(
-                1,
-                1,
-                1,
-                TimeUnit.MINUTES
-                ).asyncGroupRunner(dataMap, data -> {
+MagicianDataProcessing.getConcurrentMapAsync().asyncGroupRunner(dataMap, data -> {
         
             // 这里是每一组Map
             for(Map.Entry<String, Object> entry : data.entrySet()){
@@ -317,7 +276,12 @@ MagicianDataProcessing.getConcurrentMapAsync(
                 System.out.println(entry.getValue());
             }
         
-        }, 10, 1, TimeUnit.MINUTES);
+        }, 
+        10, 
+        1, 
+        TimeUnit.MINUTES
+        )
+        .start(); // 一样要调用start方法;
 ```
 
 ## 生产者与消费者
