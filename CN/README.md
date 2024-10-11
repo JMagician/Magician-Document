@@ -329,3 +329,36 @@ MagicianDataProcessing.getProducerAndConsumerManager()
                 .addConsumer(new DemoConsumer()) // 添加一个消费者（可以添加多个）
                 .start();
 ```
+
+<h1 style="width:100%;text-align:center;">更多项目</h1>
+
+<div class="features" style="border:0px;margin-top:0px;padding-top:0px;">
+  <div class="feature">
+    <h2>Magician-Scanning</h2>
+    <p>
+      Magician-Scanning是一个用Java开发的扫描区块链的工具包，它可以根据开发者的需求来监控交易，它计划支持三个链，ETH（BSC、POLYGON等）、SOL和TRON。
+    </p>
+  </div>
+  <div class="feature">
+    <h2>Magician-ContractsTools</h2>
+    <p>
+      Magician-ContractsTools是一个用于调用智能合约的工具包，你可以非常容易地在Java程序中调用智能合约进行查询和写入操作。
+    </p>
+  </div>
+  <div class="feature">
+    <h2>Magician-Http</h2>
+    <p>基于Netty开发的一个 小型Http服务，支持http和WebSocket，可以采用注解来声明Handler</p>
+  </div>
+  <div class="feature">
+    <h2>Magician-Route</h2>
+    <p>Magician-Route是由Magician-Web发展而来，主要是去掉了里面的反射，牺牲了一点易用性，将侧重点放在了性能上</p>
+  </div>
+  <div class="feature">
+    <h2>Magician-JDBC</h2>
+    <p>一个数据库操作框架，支持多数据源，事务管理，分页查询，单表操作无SQL，复杂操作可以自己写SQL，支持实体参数，支持{}和?占位符</p>
+  </div>
+  <div class="feature">
+    <h2>&nbsp;</h2>
+    <p>&nbsp;</p>
+  </div>
+</div>
