@@ -68,7 +68,7 @@ int result = JDBCTemplate.get().insert("表名", paramPO);
 // 构建修改条件
 List<Condition> conditionList = ConditionBuilder.createCondition()
         .add("id = ?", 10)
-        .add("and name = ?", "bee"))
+        .add("and name = ?", "bee")
         .build();
 
 // 构建修改数据
@@ -98,8 +98,8 @@ int result = JDBCTemplate.get().delete("表名", conditionList);
 // 构建查询条件
 List<Condition> conditionList = ConditionBuilder.createCondition()
             .add("id > ?", 10)
-            .add("and (name = ? or age > ?)", "bee", 10))
-            .add("order by create_time", Condition.NOT_WHERE))
+            .add("and (name = ? or age > ?)", "bee", 10)
+            .add("order by create_time", Condition.NOT_WHERE)
             .build();
 
 // 执行查询
@@ -129,9 +129,9 @@ List<Condition> conditionList = ConditionBuilder.createCondition()
             // 这里key 设置成了where条件，所以val 就设置成了 where的值，也就是查询 id > 10 的数据
             .add("id > ?", 10)
             // 这里也一样的，是where条件，但是因为他是第二个条件，所以需要 在最前面加上and，or 等连接符
-            .add("and (name = ? or age > ?)", "bee", 10))
+            .add("and (name = ? or age > ?)", "bee", 10)
             // 这是排序，所以 val需要设置成 Condition.NOT_WHERE
-            .add("order by create_time", Condition.NOT_WHERE))
+            .add("order by create_time", Condition.NOT_WHERE)
             .build();
 ```
 

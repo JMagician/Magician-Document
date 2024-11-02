@@ -1,6 +1,4 @@
-# Magician-DataProcessing
-
-Magician-DataProcessing 是一个用Java开发的数据处理框架，支持并发处理以及生产者与消费者模型
+# Magic
 
 ## 初始化配置
 
@@ -9,15 +7,15 @@ Magician-DataProcessing 是一个用Java开发的数据处理框架，支持并�
 ```xml
 <dependency>
     <groupId>com.github.yuyenews</groupId>
-    <artifactId>Magician-DataProcessing</artifactId>
-    <version>1.0.1</version>
+    <artifactId>Magic</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
 ## 并发处理任务
 
 ```java
-MagicianDataProcessing.getConcurrentTaskSync()
+MagicDataProcessing.getConcurrentTaskSync()
                 .setTimeout(1000) // 超时时间
                 .setTimeUnit(TimeUnit.MILLISECONDS) // 超时时间的单位
                 .add(() -> { // 添加一个任务
@@ -69,7 +67,7 @@ List<String> dataList = new ArrayList<>();
 只需要将他传入syncRunner方法即可
 
 ```java
-MagicianDataProcessing.getConcurrentCollectionSync()
+MagicDataProcessing.getConcurrentCollectionSync()
         .syncRunner(dataList, data -> {
 
             // 这里可以拿到List里的元素，进行处理
@@ -93,7 +91,7 @@ MagicianDataProcessing.getConcurrentCollectionSync()
 
 ```java
 // 也可以用syncGroupRunner方法
-MagicianDataProcessing.getConcurrentCollectionSync()
+MagicDataProcessing.getConcurrentCollectionSync()
         .syncGroupRunner(dataList, data -> {
 
             // 这里是每一组List
@@ -128,7 +126,7 @@ List<String> dataList = new ArrayList<>();
 
 ```java
 // 只需要将他传入asyncRunner方法即可
-MagicianDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data -> {
+MagicDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data -> {
 
             // 这里可以拿到List里的元素，进行处理
             System.out.println(data);
@@ -144,7 +142,7 @@ MagicianDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data ->
 还可以这样写
 
 ```java
-MagicianDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data -> {
+MagicDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data -> {
 
             // 这里是每一组List
             for(String item : data){
@@ -182,7 +180,7 @@ MagicianDataProcessing.ConcurrentCollectionAsync().asyncRunner(dataList, data ->
 
 ```java
 // 也可以用asyncGroupRunner方法，每个参数的具体含义可以参考文档
-MagicianDataProcessing.ConcurrentCollectionAsync().asyncGroupRunner(dataList, data -> {
+MagicDataProcessing.ConcurrentCollectionAsync().asyncGroupRunner(dataList, data -> {
         
             // 这里是每一组List
             for(String item : data){
@@ -213,7 +211,7 @@ Map的逻辑跟Collection一模一样，只不过是传入的集合变成了Map�
 Map<String, Object> dataMap = new HashMap<>();
 
 // 只需要将他传入syncRunner方法即可
-MagicianDataProcessing.getConcurrentMapSync()
+MagicDataProcessing.getConcurrentMapSync()
         .syncRunner(dataMap, (key, value) -> {
 
             // 这里可以拿到Map里的元素，进行处理
@@ -227,7 +225,7 @@ MagicianDataProcessing.getConcurrentMapSync()
 
 ```java
 // 也可以用syncGroupRunner方法
-MagicianDataProcessing.getConcurrentMapSync()
+MagicDataProcessing.getConcurrentMapSync()
         .syncGroupRunner(dataMap, data -> {
 
             // 这里是每一组Map
@@ -249,7 +247,7 @@ MagicianDataProcessing.getConcurrentMapSync()
 Map<String, Object> dataMap = new HashMap<>();
 
 // 只需要将他传入asyncRunner方法即可
-MagicianDataProcessing.getConcurrentMapAsync().asyncRunner(dataMap, (key, value) -> {
+MagicDataProcessing.getConcurrentMapAsync().asyncRunner(dataMap, (key, value) -> {
 
             // 这里可以拿到Map里的元素，进行处理
             System.out.println(key);
@@ -267,7 +265,7 @@ MagicianDataProcessing.getConcurrentMapAsync().asyncRunner(dataMap, (key, value)
 
 ```java
 // 也可以用asyncGroupRunner方法
-MagicianDataProcessing.getConcurrentMapAsync().asyncGroupRunner(dataMap, data -> {
+MagicDataProcessing.getConcurrentMapAsync().asyncGroupRunner(dataMap, data -> {
         
             // 这里是每一组Map
             for(Map.Entry<String, Object> entry : data.entrySet()){
@@ -290,7 +288,7 @@ MagicianDataProcessing.getConcurrentMapAsync().asyncGroupRunner(dataMap, data ->
 
 ### 我们先创建一个生产者
 ```java
-public class DemoProducer extends MagicianProducer {
+public class DemoProducer extends MagicProducer {
 
     /**
      * 设置ID，必须全局唯一，默认是当前类的全名
@@ -360,7 +358,7 @@ public class DemoProducer extends MagicianProducer {
 
 ### 再创建一个消费者
 ```java
-public class DemoConsumer extends MagicianConsumer {
+public class DemoConsumer extends MagicConsumer {
     /**
      * 设置ID，必须全局唯一，默认是当前类的全名
      * 如果采用默认值，可以不重写这个方法
@@ -431,8 +429,240 @@ public class DemoConsumer extends MagicianConsumer {
 ```java
 // 创建一组生产者与消费者，而这样组可以创建无限个
 // 每一组的生产者都只会把数据推送给同一组的消费者
-MagicianDataProcessing.getProducerAndConsumerManager()
+MagicDataProcessing.getProducerAndConsumerManager()
                 .addProducer(new DemoProducer()) // 添加一个生产者（可以添加多个）
                 .addConsumer(new DemoConsumer()) // 添加一个消费者（可以添加多个）
                 .start();
+```
+
+## 数据库操作
+
+此组件重度依赖于SpringBoot，底层是基于JdbcTemplate的扩展，做到了单表操作不需要写SQL，天然支持MySql分页查询，支持在SQL中写入{属性名}占位符，如果你不想用SpringBoot但是又想使用这个组件，可以用[Magician-JDBC](/db/index.md)
+
+### 添加依赖
+
+```xml
+<!-- mysql driver package -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.20</version>
+</dependency>
+<!-- druid connection pool -->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>1.2.5</version>
+</dependency>
+```
+
+### 创建一个Spring的JdbcTemplate对象
+
+```java
+@Resource
+private JdbcTemplate jdbcTemplate;
+```
+
+### 单表无SQL操作
+
+#### 插入数据
+
+```java
+ParamPO paramPO = new ParamPO();
+paramPO.setUserName("a");
+paramPO.setUserEmail("test@qq.com");
+
+int result = MagicDBUtils.get(jdbcTemplate).insert("表名", paramPO);
+```
+
+### 修改数据
+
+```java
+// 构建修改条件
+ConditionBuilder conditionBuilder = ConditionBuilder.createCondition()
+        .add("id = ?", 10)
+        .add("and name = ?", "bee");
+
+// 构建修改数据
+ParamPO paramPO = new ParamPO();
+paramPO.setUserName("a");
+paramPO.setUserEmail("test@qq.com");
+
+// 执行修改
+int result = MagicDBUtils.get(jdbcTemplate).update("表名", paramPO, conditionBuilder);
+```
+
+### 删除数据
+
+```java
+// 构建删除条件
+ConditionBuilder conditionBuilder = ConditionBuilder.createCondition()
+        .add("id = ?", 10);
+
+// 执行删除
+int result = MagicDBUtils.get(jdbcTemplate).delete("表名", conditionBuilder);
+```
+
+### 查询数据
+
+```java
+// 构建查询条件
+ConditionBuilder conditionBuilder = ConditionBuilder.createCondition()
+            .add("id > ?", 10)
+            .add("and (name = ? or age > ?)", "bee", 10)
+            .add("order by create_time", Condition.NOT_WHERE);
+
+// 执行查询
+List<ParamPO> result = MagicDBUtils.get(jdbcTemplate).select("表名", conditionBuilder, ParamPO.class);
+```
+
+### 条件构造器说明
+
+内部结构如下
+
+```java
+public class Condition {
+    // 条件，可以是 where， order by， group by 等任意条件
+    private String key;
+    // 如果条件设置的是where条件，那么这个属性就需要设置成 条件的值
+    private Object[] val;
+
+    // 如果条件不是where，那么val就必须设置成这个常量
+    public static final String NOT_WHERE = "notWhere";
+}
+```
+
+可以看如下示例
+
+```java
+ConditionBuilder conditionBuilder = ConditionBuilder.createCondition()
+            // 这里key 设置成了where条件，所以val 就设置成了 where的值，也就是查询 id > 10 的数据
+            .add("id > ?", 10)
+            // 这里也一样的，是where条件，但是因为他是第二个条件，所以需要 在最前面加上and，or 等连接符
+            .add("and (name = ? or age > ?)", "bee", 10)
+            // 这是排序，所以 val需要设置成 Condition.NOT_WHERE
+            .add("order by create_time", Condition.NOT_WHERE);
+```
+
+注：条件构造器只支持 ? 占位符
+
+## 自定义sql
+
+### 增删改
+
+```java
+ParamPO paramPO = new ParamPO();
+paramPO.setUserName("testTx222");
+paramPO.setUserEmail("testTx222@qq.com");
+paramPO.setId(4);
+
+// 采用{}占位符的写法
+int result = MagicDBUtils.get(jdbcTemplate).exec("update xt_message_board set user_name = {user_name} , user_email = {user_email} where id = {id}", paramPO);
+
+// 采用 ? 占位符的写法
+int result = MagicDBUtils.get(jdbcTemplate).exec("update xt_message_board set user_name = ? , user_email = ? where id = ?", new Object[]{"testTx222","testTx222@qq.com", 4});
+```
+
+### 查询数据
+
+```java
+ParamPO paramPO = new ParamPO();
+paramPO.setId(5);
+paramPO.setUserName("a");
+
+// 采用{}占位符的写法
+List<ParamPO> result = MagicDBUtils.get(jdbcTemplate).selectList("select * from xt_message_board where id > {id} and user_name != {user_name}", paramPO, ParamPO.class);
+
+// 采用 ? 占位符的写法
+List<ParamPO> result = MagicDBUtils.get(jdbcTemplate).selectList("select * from xt_message_board where id > ? and user_name != ?", new Object[]{5, "a"}, ParamPO.class);
+```
+
+### 分页查询
+
+```java
+// 查询条件
+ParamPO paramPO = new ParamPO();
+paramPO.setId(5);
+paramPO.setUserName("a");
+
+// 查询参数
+PageParamModel pageParamModel = new PageParamModel();
+pageParamModel.setCurrentPage(1);
+pageParamModel.setPageSize(10);
+pageParamModel.setParam(paramPO);
+
+// 使用默认countSql查询
+PageModel<ParamPO> pageModel =  MagicDBUtils.get(jdbcTemplate).selectPage("select * from xt_message_board where id > {id} and user_name != {user_name}", pageParamModel, ParamPO.class);
+
+// 使用自定义countSql查询
+String countSql = "自己定义countSql";
+
+PageModel<ParamPO> pageModel =  MagicDBUtils.get(jdbcTemplate).selectPageCustomCountSql("select * from xt_message_board where id > {id} and user_name != {user_name}", countSql, pageParamModel, ParamPO.class);
+
+```
+
+## 实体映射
+
+完全用的是Jackson的那一套的注解
+
+```java
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TestPO{
+
+    @JsonProperty(value = "数据库里的name字段名")
+    private String name;
+    @JsonProperty(value = "数据库里的age字段名")
+    private String age;
+    @JsonProperty(value = "数据库里的id字段名")
+    private int id;
+
+    @JsonProperty("create_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+}
+```
+
+## 属性文件读取
+
+### 加载配置文件
+
+目前只支持 properties文件，你可以在任意目录下创建，然后使用以下方式将文件加载到项目中
+
+从本机任意目录加载
+```java
+// 必须写文件的绝对路径
+MagicProperties.load("/home/xxx/application.properties", ReadMode.LOCAL, "UTF-8");
+```
+
+从当前项目的资源目录下加载
+
+```java
+// 类资源下的文件的路径
+MagicProperties.load("/application.properties", ReadMode.RESOURCE, "UTF-8");
+```
+
+从远程目录加载
+
+```java
+// 远程文件路径, 只支持http协议
+MagicProperties.load("https://www.test.com/application.properties", ReadMode.REMOTE, "UTF-8");
+```
+
+### 根据key获取value
+
+```java
+// 如果配置文件里有userName这个key，那么就会直接使用，如果没有 那么会去环境变量读取
+String userName = MagicProperties.get("userName");
+```
+
+### 遍历所有的key -> value
+
+此法只能遍历文件有的配置项，获取不到环境变量
+
+```java
+MagicProperties.forEach((key, value)->{
+            System.out.println(key);
+            System.out.println(value);
+        });
 ```

@@ -1,6 +1,6 @@
 module.exports = {
-  title: 'Magician',
-  description: '一个用Java开发的数据处理框架，支持并发处理以及生产者与消费者模型',
+  title: 'Magic',
+  description: 'Magic是Magician旗下的一个工具包',
   base: '/',
   head: [
     ['meta', { name: 'keywords', content: 'Magician,Magician框架,小型服务框架,开源http服务,web开发,Java,开源项目,NIO,区块链开发,以太坊,扫块,ETH,ARB,arb,eth,blockchain' }],
@@ -23,7 +23,7 @@ module.exports = {
       {
         text: 'Github',
         items: [
-          { text: 'Magician-DataProcessing', link: 'https://github.com/JMagician/Magician-DataProcessing' },
+          { text: 'Magic', link: 'https://github.com/JMagician/Magic' },
           { text: '区块链', link: 'https://github.com/Magician-Blockchain' },
           { text: '其他', link: 'https://github.com/JMagician' }
         ]
@@ -31,7 +31,7 @@ module.exports = {
       {
         text: '文档',
         items: [
-          { text: 'Magician-DataProcessing', link: '/dataprocessing/index.md' },
+          { text: 'Magic', link: '/magic/index.md' },
           { text: '区块链', link: '/chain/index.md' },
           { text: 'Magician-Http', link: '/web/index.md' },
           { text: 'Magician-JDBC', link: '/db/index.md' },
