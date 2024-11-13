@@ -8,7 +8,7 @@
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magic</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -448,7 +448,8 @@ MagicDataProcessing.getProducerAndConsumerManager()
     <artifactId>mysql-connector-java</artifactId>
     <version>8.0.20</version>
 </dependency>
-<!-- druid connection pool -->
+
+<!-- 支持任意连接池，这里只做举例 -->
 <dependency>
     <groupId>com.alibaba</groupId>
     <artifactId>druid</artifactId>
@@ -603,21 +604,19 @@ PageModel<ParamPO> pageModel =  MagicDBUtils.get(jdbcTemplate).selectPageCustomC
 
 ## 实体映射
 
-完全用的是Jackson的那一套的注解
+完全用的是fastjson2的那一套的注解
 
 ```java
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestPO{
 
-    @JsonProperty(value = "数据库里的name字段名")
+    @JSONField(name = "数据库里的name字段名")
     private String name;
-    @JsonProperty(value = "数据库里的age字段名")
+    @JSONField(name = "数据库里的age字段名")
     private String age;
-    @JsonProperty(value = "数据库里的id字段名")
+    @JSONField(name = "数据库里的id字段名")
     private int id;
 
-    @JsonProperty("create_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(name = "create_time", format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
 }
