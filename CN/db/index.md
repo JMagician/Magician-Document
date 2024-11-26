@@ -2,6 +2,10 @@
 
 Magician-JDBC，跟Magician-Web组件不一样，他不需要依赖Magician，可以完全的独立使用
 
+## 运行环境
+
+JDK17+
+
 ## 初始化配置
 
 ### 导入依赖
@@ -10,7 +14,7 @@ Magician-JDBC，跟Magician-Web组件不一样，他不需要依赖Magician，�
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-JDBC</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.5</version>
 </dependency>
 
 <!-- mysql driver package -->
@@ -66,10 +70,9 @@ int result = JDBCTemplate.get().insert("表名", paramPO);
 
 ```java
 // 构建修改条件
-List<Condition> conditionList = ConditionBuilder.createCondition()
+ConditionBuilder conditions = ConditionBuilder.createCondition()
         .add("id = ?", 10)
-        .add("and name = ?", "bee")
-        .build();
+        .add("and name = ?", "bee");
 
 // 构建修改数据
 ParamPO paramPO = new ParamPO();
@@ -77,33 +80,31 @@ paramPO.setUserName("a");
 paramPO.setUserEmail("test@qq.com");
 
 // 执行修改
-int result = JDBCTemplate.get().update("表名", paramPO, conditionList);
+int result = JDBCTemplate.get().update("表名", paramPO, conditions);
 ```
 
 ### 删除数据
 
 ```java
 // 构建删除条件
-List<Condition> conditionList = ConditionBuilder.createCondition()
-        .add("id = ?", 10)
-        .build();
+ConditionBuilder conditions = ConditionBuilder.createCondition()
+        .add("id = ?", 10);
 
 // 执行删除
-int result = JDBCTemplate.get().delete("表名", conditionList);
+int result = JDBCTemplate.get().delete("表名", conditions);
 ```
 
 ### 查询数据
 
 ```java
 // 构建查询条件
-List<Condition> conditionList = ConditionBuilder.createCondition()
+ConditionBuilder conditions = ConditionBuilder.createCondition()
             .add("id > ?", 10)
             .add("and (name = ? or age > ?)", "bee", 10)
-            .add("order by create_time", Condition.NOT_WHERE)
-            .build();
+            .add("order by create_time", Condition.NOT_WHERE);
 
 // 执行查询
-List<ParamPO> result = JDBCTemplate.get().select("表名", conditionList, ParamPO.class);
+List<ParamPO> result = JDBCTemplate.get().select("表名", conditions, ParamPO.class);
 ```
 
 ### 条件构造器说明
@@ -125,14 +126,13 @@ public class Condition {
 可以看如下示例
 
 ```java
-List<Condition> conditionList = ConditionBuilder.createCondition()
+ConditionBuilder conditions = ConditionBuilder.createCondition()
             // 这里key 设置成了where条件，所以val 就设置成了 where的值，也就是查询 id > 10 的数据
             .add("id > ?", 10)
             // 这里也一样的，是where条件，但是因为他是第二个条件，所以需要 在最前面加上and，or 等连接符
             .add("and (name = ? or age > ?)", "bee", 10)
             // 这是排序，所以 val需要设置成 Condition.NOT_WHERE
-            .add("order by create_time", Condition.NOT_WHERE)
-            .build();
+            .add("order by create_time", Condition.NOT_WHERE);
 ```
 
 注：条件构造器只支持 ? 占位符
@@ -234,21 +234,19 @@ TransactionManager.beginTraction(TractionLevel.SERIALIZABLE);
 
 ## 实体映射
 
-完全用的是Jackson的那一套的注解
+完全用的是fastjson2的那一套的注解
 
 ```java
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestPO{
 
-    @JsonProperty(value = "数据库里的name字段名")
+    @JSONField(name = "数据库里的name字段名")
     private String name;
-    @JsonProperty(value = "数据库里的age字段名")
+    @JSONField(name = "数据库里的age字段名")
     private String age;
-    @JsonProperty(value = "数据库里的id字段名")
+    @JSONField(name = "数据库里的id字段名")
     private int id;
 
-    @JsonProperty("create_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(name = "create_time", format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
 }

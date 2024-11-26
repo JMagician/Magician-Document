@@ -1,5 +1,9 @@
 # Magic
 
+## 运行环境
+
+JDK17+
+
 ## 初始化配置
 
 ### 导入依赖
@@ -449,7 +453,7 @@ MagicDataProcessing.getProducerAndConsumerManager()
     <version>8.0.20</version>
 </dependency>
 
-<!-- 支持任意连接池，这里只做举例 -->
+<!-- 支持任意连接池，这里只是举个例子，你平时该怎么用springboot就怎么用 -->
 <dependency>
     <groupId>com.alibaba</groupId>
     <artifactId>druid</artifactId>
