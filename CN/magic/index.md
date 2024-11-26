@@ -606,6 +606,51 @@ PageModel<ParamPO> pageModel =  MagicDBUtils.get(jdbcTemplate).selectPageCustomC
 
 ```
 
+### SQL构造器
+
+其实就是把StringBuilder封装了一层，目的是为了减少大量的if，让判断+拼接的过程缩短在一行上，以及在拼接时不再需要注意空格了
+
+以实体对象作为参数的示例
+```java
+ParamPO paramPO = new ParamPO();
+paramPO.setAge(10);
+paramPO.setHeight(1);
+
+SqlBuilder sqlBuilder = SqlBuilder.builder()
+        .init("select * from user_info where 1=1") // 这里传入sql主体
+        .append("and age > {age}", paramPO.getAge() > 0) // 第一个参数传入要拼接的where条件，第二个参数传入是否要拼接的判断条件，也就是说第二个参数的等式成立才会将第一个参数拼接到sql上去，下面都是一样的
+        .append("and name = {name}", paramPO.getName() != null)
+        .append("and height > {height}", paramPO.getHeight() != null);
+
+// 直接toString 可以获取到拼接后的完整sql
+String sql = sqlBuilder.toString();
+
+// 查询数据
+List<ParamPO> result = MagicDBUtils.get(jdbcTemplate).selectList(sql, paramPO, ParamPO.class);
+```
+
+以数组作为参数的示例
+```java
+List<Object> params = new ArrayList<>();
+
+SqlBuilder sqlBuilder = SqlBuilder.builder()
+        .init("select * from user_info where 1=1") // 这里传入sql主体
+        
+        // 这里为了偷懒，还是用到了paramPO对象，反正大家懂那个意思就行了
+        // 第一个参数传入要拼接的where条件，第二个参数传入是否要拼接的判断条件
+        // 也就是说第二个参数的等式成立才会将第一个参数拼接到sql上去，下面都是一样的
+        // 第三个参数是一个回调函数，用来往params里添加数据的
+        .append("and age > ?", paramPO.getAge() > 0, ()->{params.add(paramPO.getAge());}) 
+        .append("and name = ?", paramPO.getName() != null, ()->{params.add(paramPO.getName());})
+        .append("and height > ?", paramPO.getHeight() != null, ()->{params.add(paramPO.getHeight());});
+
+// 直接toString 可以获取到拼接后的完整sql
+String sql = sqlBuilder.toString();
+
+// 查询数据，注意看第二个参数
+List<ParamPO> result = MagicDBUtils.get(jdbcTemplate).selectList(sql, params.toArray(), ParamPO.class);
+```
+
 ## 实体映射
 
 完全用的是fastjson2的那一套的注解

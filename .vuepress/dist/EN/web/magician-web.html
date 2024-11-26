@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Magician-Web</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    
+    <meta name="description" content="">
+    
+    <link rel="preload" href="/assets/css/0.styles.e1700646.css" as="style"><link rel="preload" href="/assets/js/app.9cd974db.js" as="script"><link rel="preload" href="/assets/js/2.c4085713.js" as="script"><link rel="preload" href="/assets/js/21.9695e6ca.js" as="script"><link rel="prefetch" href="/assets/js/10.c6fdec9a.js"><link rel="prefetch" href="/assets/js/11.d7509d98.js"><link rel="prefetch" href="/assets/js/12.8b1ee7d4.js"><link rel="prefetch" href="/assets/js/13.051c5167.js"><link rel="prefetch" href="/assets/js/14.b386ee7f.js"><link rel="prefetch" href="/assets/js/15.ec039afb.js"><link rel="prefetch" href="/assets/js/16.8b4e699f.js"><link rel="prefetch" href="/assets/js/17.bd0c5787.js"><link rel="prefetch" href="/assets/js/18.6e6cddf1.js"><link rel="prefetch" href="/assets/js/19.3d5047c3.js"><link rel="prefetch" href="/assets/js/20.efd0f4e4.js"><link rel="prefetch" href="/assets/js/22.eb53fbd8.js"><link rel="prefetch" href="/assets/js/3.0d41ff23.js"><link rel="prefetch" href="/assets/js/4.b366dbb8.js"><link rel="prefetch" href="/assets/js/5.c2095a5a.js"><link rel="prefetch" href="/assets/js/6.f4174af5.js"><link rel="prefetch" href="/assets/js/7.7a991eeb.js"><link rel="prefetch" href="/assets/js/8.9b93cd77.js"><link rel="prefetch" href="/assets/js/9.a57a812d.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.e1700646.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><!---->  <!----> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="magician-web"><a href="#magician-web" class="header-anchor">#</a> Magician-Web</h1> <h2 id="initial-configuration"><a href="#initial-configuration" class="header-anchor">#</a> Initial configuration</h2> <h3 id="importing-dependencies"><a href="#importing-dependencies" class="header-anchor">#</a> Importing dependencies</h3> <p>Add this dependency to the foundation of the Magician project</p> <div class="language-xml extra-class"><pre class="language-xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">&gt;</span></span>com.github.yuyenews<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">&gt;</span></span>Magician-Web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">&gt;</span></span>2.0.3<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="creating-a-core-handler"><a href="#creating-a-core-handler" class="header-anchor">#</a> Creating a core Handler</h3> <p>Only one HttpHandler is allowed, this Handler acts as a distributor and distributes the request to the Route</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@HttpHandler</span><span class="token punctuation">(</span>path<span class="token operator">=</span><span class="token string">&quot;/&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DemoHandler</span> <span class="token keyword">implements</span> <span class="token class-name">HttpBaseHandler</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">request</span><span class="token punctuation">(</span><span class="token class-name">MagicianRequest</span> magicianRequest<span class="token punctuation">,</span> <span class="token class-name">MagicianResponse</span> response<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token keyword">try</span><span class="token punctuation">{</span>
+            <span class="token comment">// The main thing is this sentence</span>
+            <span class="token class-name">MagicianWeb</span><span class="token punctuation">.</span><span class="token function">request</span><span class="token punctuation">(</span>magicianRequest<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="controller-interceptors-and-other-functions"><a href="#controller-interceptors-and-other-functions" class="header-anchor">#</a> Controller, interceptors and other functions</h2> <h3 id="creating-a-controller"><a href="#creating-a-controller" class="header-anchor">#</a> Creating a Controller</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Route</span><span class="token punctuation">(</span><span class="token string">&quot;/demoController&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DemoController</span> <span class="token punctuation">{</span>
+
+	<span class="token comment">// Parameters can be received using entity classes and any request method is supported</span>
+	<span class="token annotation punctuation">@Route</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">&quot;/demo&quot;</span><span class="token punctuation">,</span> requestMethod <span class="token operator">=</span> <span class="token class-name">ReqMethod</span><span class="token punctuation">.</span>POST<span class="token punctuation">)</span>
+	<span class="token keyword">public</span> <span class="token class-name">DemoVO</span> <span class="token function">demo</span><span class="token punctuation">(</span><span class="token class-name">DemoVO</span> demoVO<span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token keyword">return</span> demoVO<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token comment">// Parameters can also be received in the traditional way, by calling the method inside the `request` to get the parameters</span>
+    <span class="token comment">// For the reception method here, scroll up and look at the heading 'Reception Parameters'</span>
+    <span class="token comment">// This approach can be mixed with the above mentioned entity class receiving parameters</span>
+	<span class="token annotation punctuation">@Route</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">&quot;/demob&quot;</span><span class="token punctuation">,</span> requestMethod <span class="token operator">=</span> <span class="token class-name">ReqMethod</span><span class="token punctuation">.</span>POST<span class="token punctuation">)</span>
+	<span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">demob</span><span class="token punctuation">(</span><span class="token class-name">MagicianRequest</span> request<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        request<span class="token punctuation">.</span><span class="token function">getParam</span><span class="token punctuation">(</span><span class="token string">&quot;name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> <span class="token string">&quot;ok&quot;</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token comment">// To download a file, simply return the ResponseInputStream</span>
+	<span class="token annotation punctuation">@Route</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">&quot;/demob&quot;</span><span class="token punctuation">,</span> requestMethod <span class="token operator">=</span> <span class="token class-name">ReqMethod</span><span class="token punctuation">.</span>POST<span class="token punctuation">)</span>
+	<span class="token keyword">public</span> <span class="token class-name">ResponseInputStream</span> <span class="token function">demob</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token class-name">ResponseInputStream</span> responseInputStream <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ResponseInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		responseInputStream<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span><span class="token string">&quot;file name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		responseInputStream<span class="token punctuation">.</span><span class="token function">setBytes</span><span class="token punctuation">(</span>file bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> responseInputStream<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="modify-scan-range"><a href="#modify-scan-range" class="header-anchor">#</a> Modify scan range</h3> <ul><li>The scan scope needs to include the [handler, controller, interceptor package name].</li> <li>More than one can be comma-separated, or can be configured as their parent package name</li></ul> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">Magician</span><span class="token punctuation">.</span><span class="token function">createHttp</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">scan</span><span class="token punctuation">(</span><span class="token string">&quot;handler, controller, interceptor package name&quot;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="traditional-method-of-receiving-parameters"><a href="#traditional-method-of-receiving-parameters" class="header-anchor">#</a> Traditional method of receiving parameters</h3> <p>Here is just a brief list, for details see the above heading &quot;Receiving Parameters</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">// Get a parameter by its name</span>
+request<span class="token punctuation">.</span><span class="token function">getParam</span><span class="token punctuation">(</span><span class="token string">&quot;param name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Get file by parameter name</span>
+request<span class="token punctuation">.</span><span class="token function">getFile</span><span class="token punctuation">(</span><span class="token string">&quot;param name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Get request headers by name</span>
+request<span class="token punctuation">.</span><span class="token function">getRequestHeader</span><span class="token punctuation">(</span><span class="token string">&quot;header name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// If this request is a json pass, you can use this method to get the json string</span>
+request<span class="token punctuation">.</span><span class="token function">getJsonParam</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="entity-reception-parameters"><a href="#entity-reception-parameters" class="header-anchor">#</a> Entity reception parameters</h3> <div class="language-java extra-class"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ParamVO</span> <span class="token punctuation">{</span>
+
+    <span class="token comment">// ----- The name of the field should match the name of the request parameter; if it is a json, the entity class should be consistent with the structure of the json -----</span>
+
+    <span class="token comment">// General parameters</span>
+    <span class="token keyword">private</span> <span class="token class-name">Integer</span> id<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ids
+
+    <span class="token comment">// File parameters</span>
+    <span class="token keyword">private</span> <span class="token class-name">MixedFileUpload</span> mixedFileUpload<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">MixedFileUpload</span><span class="token punctuation">[</span><span class="token punctuation">]</span> mixedFileUploads<span class="token punctuation">;</span>
+
+    <span class="token comment">// ----- Need to get, set, not written here to save space -----</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="automatic-parameter-verification"><a href="#automatic-parameter-verification" class="header-anchor">#</a> Automatic parameter verification</h3> <p>Just add a comment to the field</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">// Cannot be empty and between 10 and 100 in size</span>
+<span class="token annotation punctuation">@Verification</span><span class="token punctuation">(</span>notNull <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">,</span> max <span class="token operator">=</span> <span class="token string">&quot;100&quot;</span><span class="token punctuation">,</span> min <span class="token operator">=</span> <span class="token string">&quot;10&quot;</span><span class="token punctuation">,</span> msg <span class="token operator">=</span> <span class="token string">&quot;The id cannot be empty and must be between 10 and 100 in size&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> <span class="token class-name">Integer</span> id<span class="token punctuation">;</span>
+
+<span class="token comment">// Regular Expressions Validation</span>
+<span class="token annotation punctuation">@Verification</span><span class="token punctuation">(</span>reg <span class="token operator">=</span> <span class="token string">&quot;^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,12}$&quot;</span><span class="token punctuation">,</span>msg <span class="token operator">=</span> <span class="token string">&quot;Password cannot be empty and must be a 6-12 digit alpha combination&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> <span class="token class-name">String</span> password<span class="token punctuation">;</span>
+</code></pre></div><h4 id="explanation-of-properties"><a href="#explanation-of-properties" class="header-anchor">#</a> Explanation of properties</h4> <ul><li>notNull: if or not null, set to true to indicate not null, not valid for basic types (not valid for types that cannot be assigned as null).</li> <li>max: maximum value, only valid for int, double, float, BigDecimal.</li> <li>min: minimum value, only valid for int, double, float, BigDecimal.</li> <li>msg: if the check does not pass, return the prompt text on the front end</li> <li>reg: regular expression, only valid for string types</li></ul> <h3 id="creating-interceptors"><a href="#creating-interceptors" class="header-anchor">#</a> Creating Interceptors</h3> <p>Create a class that implements the MagicianInterceptor interface</p> <ul><li>Add the @Interceptor(pattern = &quot;*&quot;) annotation to the class</li> <li>The pattern attribute is the interceptor's rule, if you want to intercept all routes, configure it as *, otherwise it must start with /.</li> <li>If the interceptor passes, simply return SUCCESS, if not, return an error message (the returned object will be converted to json).</li></ul> <div class="language-java extra-class"><pre class="language-java"><code><span class="token annotation punctuation">@Interceptor</span><span class="token punctuation">(</span>pattern <span class="token operator">=</span> <span class="token string">&quot;/demoController/*&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DemoInter</span> <span class="token keyword">implements</span> <span class="token class-name">MagicianInterceptor</span> <span class="token punctuation">{</span>
+
+    <span class="token comment">/**
+     * Before routing execution
+     * @param magicianRequest
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">before</span><span class="token punctuation">(</span><span class="token class-name">MagicianRequest</span> magicianRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>magicianRequest<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> SUCCESS<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * After routing execution
+     * @param magicianRequest
+     * @param o Data returned by routing
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">after</span><span class="token punctuation">(</span><span class="token class-name">MagicianRequest</span> magicianRequest<span class="token punctuation">,</span> <span class="token class-name">Object</span> o<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>o<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> SUCCESS<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="jwt-management"><a href="#jwt-management" class="header-anchor">#</a> JWT Management</h3> <p>Creating a jwt managed object is a new object each time it is created, so a static tool class needs to be written to manage it</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">JwtManager</span> jwtManager <span class="token operator">=</span> <span class="token class-name">JwtManager</span>
+            <span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">setSecret</span><span class="token punctuation">(</span><span class="token string">&quot;秘钥&quot;</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">setCalendarField</span><span class="token punctuation">(</span><span class="token class-name">Calendar</span><span class="token punctuation">.</span>MILLISECOND<span class="token punctuation">)</span> <span class="token comment">// Expiration time unit, default: milliseconds</span>
+            <span class="token punctuation">.</span><span class="token function">setCalendarInterval</span><span class="token punctuation">(</span><span class="token number">86400</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// Expiration time, default 86400</span>
+</code></pre></div><p>Creating a token</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">Demo</span> demo <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Demo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+demo<span class="token punctuation">.</span><span class="token function">setXXX</span><span class="token punctuation">(</span>xxx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">String</span> token <span class="token operator">=</span> jwtManager<span class="token punctuation">.</span><span class="token function">createToken</span><span class="token punctuation">(</span>demo<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>Restore token</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">Demo</span> demo <span class="token operator">=</span> jwtManager<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span>token<span class="token punctuation">,</span> <span class="token class-name">Demo</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.9cd974db.js" defer></script><script src="/assets/js/2.c4085713.js" defer></script><script src="/assets/js/21.9695e6ca.js" defer></script>
+  </body>
+</html>

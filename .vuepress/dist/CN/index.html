@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>VuePress</title>
-    <meta name="generator" content="VuePress 1.8.2">
+    <meta name="generator" content="VuePress 1.9.7">
     
     <meta name="description" content="">
     
-    <link rel="preload" href="/assets/css/0.styles.e1700646.css" as="style"><link rel="preload" href="/assets/js/app.35fb4f71.js" as="script"><link rel="preload" href="/assets/js/2.67bc9379.js" as="script"><link rel="preload" href="/assets/js/7.559261fc.js" as="script"><link rel="prefetch" href="/assets/js/10.0929825e.js"><link rel="prefetch" href="/assets/js/11.bae37875.js"><link rel="prefetch" href="/assets/js/12.05622cc6.js"><link rel="prefetch" href="/assets/js/3.8a19f102.js"><link rel="prefetch" href="/assets/js/4.96e9b071.js"><link rel="prefetch" href="/assets/js/5.c776c5b5.js"><link rel="prefetch" href="/assets/js/6.cee21277.js"><link rel="prefetch" href="/assets/js/8.e9955819.js"><link rel="prefetch" href="/assets/js/9.6fbc1b32.js">
+    <link rel="preload" href="/assets/css/0.styles.e1700646.css" as="style"><link rel="preload" href="/assets/js/app.9cd974db.js" as="script"><link rel="preload" href="/assets/js/2.c4085713.js" as="script"><link rel="preload" href="/assets/js/7.7a991eeb.js" as="script"><link rel="prefetch" href="/assets/js/10.c6fdec9a.js"><link rel="prefetch" href="/assets/js/11.d7509d98.js"><link rel="prefetch" href="/assets/js/12.8b1ee7d4.js"><link rel="prefetch" href="/assets/js/13.051c5167.js"><link rel="prefetch" href="/assets/js/14.b386ee7f.js"><link rel="prefetch" href="/assets/js/15.ec039afb.js"><link rel="prefetch" href="/assets/js/16.8b4e699f.js"><link rel="prefetch" href="/assets/js/17.bd0c5787.js"><link rel="prefetch" href="/assets/js/18.6e6cddf1.js"><link rel="prefetch" href="/assets/js/19.3d5047c3.js"><link rel="prefetch" href="/assets/js/20.efd0f4e4.js"><link rel="prefetch" href="/assets/js/21.9695e6ca.js"><link rel="prefetch" href="/assets/js/22.eb53fbd8.js"><link rel="prefetch" href="/assets/js/3.0d41ff23.js"><link rel="prefetch" href="/assets/js/4.b366dbb8.js"><link rel="prefetch" href="/assets/js/5.c2095a5a.js"><link rel="prefetch" href="/assets/js/6.f4174af5.js"><link rel="prefetch" href="/assets/js/8.9b93cd77.js"><link rel="prefetch" href="/assets/js/9.a57a812d.js">
     <link rel="stylesheet" href="/assets/css/0.styles.e1700646.css">
   </head>
   <body>
@@ -16,11 +16,25 @@
       VuePress
     </h1> <p class="description">
       Welcome to your VuePress site
-    </p> <p class="action"><a href="/web/index.html" class="nav-link action-button">
-  快速上手 →
-</a></p></header> <div class="features"><div class="feature"><h2>Magician</h2> <p>基于Netty开发的一个 小型Http服务，支持http和WebSocket，可以采用注解来声明Handler</p></div><div class="feature"><h2>Magician-Web</h2> <p>Magician的一个扩展，是一个MVC框架，支持Controller管理，拦截器，JWT，自动化参数验证，实体接收参数等功能</p></div><div class="feature"><h2>Magician-JDBC</h2> <p>一个数据库操作框架，支持多数据源，事务管理，分页查询，单表操作无SQL，复杂操作可以自己写SQL，支持实体参数，支持{}和?占位符</p></div></div> <div class="theme-default-content custom content__default"></div> <div class="footer">
-    基于MIT协议的开源项目 | 微信公众号 - Magician IO | Email - yuyemail123@gmail.com
+    </p> <p class="action"><a href="/magic/index.html" class="nav-link action-button">
+  文档 →
+</a></p></header> <!----> <div class="theme-default-content custom content__default"><h2 style="margin:0px;">设计理念</h2> <p><span style="color:#000000;font-weight:bold;">本项目并不是为了打造一个工具包，而是希望可以解决一些业务需求，用于减少开发中的工作量或者设计负担。</span></p> <p>就拿目前已经发布的这几个功能模块来举个例子，我们完全可以把它们连城一条线，【利用数据库操作模块从数据库查询数据】-&gt;【通过生产者处理后推送给消费者】-&gt;【消费者拿到数据后，利用集合处理、并发任务 这两个功能来消费数据、处理对应的业务逻辑】</p> <p>而【属性文件读取】功能模块，可以让你在脱离框架的环境下开发时，实现将配置项放入文件里</p> <p><span style="color:#000000;font-weight:bold;">我们还可以将这几个模块分开使用，比如：</span></p> <p>✅ 当我们有一个很大的List或者Map需要遍历，根据每一条元素来判断处理，这个时候我们就可以用到【集合处理】功能模块，他可以多线程遍历。</p> <p>✅ 当同一个请求需要处理若干个没有因果关系的业务逻辑时，我们可以用到【并发任务】功能模块，他可以将这几个业务逻辑并发处理掉。</p> <p>✅ 当我们需要操作数据库的时候，不需要再引入那么大庞大复杂的MyBatis或者JPA了，而是直接用Spring自带的JdbcTemplate就可以达到目的，因为他不好用，所以我们进行了扩展，也就是【数据库操作】功能模块。</p> <br> <h2 style="margin:0px;">核心功能</h2> <div class="features" style="border:0px;margin-top:0px;padding-top:0px;"><div class="feature"><h2>集合处理</h2> <p>通过分组+多线程的方式对集合元素进行处理，线程数量完全可控，不会造成线程创建太多的局面，可以有效提高处理集合元素的效率</p></div> <div class="feature"><h2>并发任务</h2> <p>
+      对于需要并发处理的多个任务，不需要自己创建与管理线程，只需要专注在业务逻辑上
+    </p></div> <div class="feature"><h2>生产者与消费者模型</h2> <p>
+      采用多对多模型，多个生产者可以对应多个消费者，这样的对应关系为一组，而这样的组合可以创建多个，并且可以有效避免队列积压
+    </p></div> <div class="feature"><h2>数据库操作</h2> <p>
+      基于Spring的JdbcTemplate做的扩展，做到了单表操作不需要写SQL，天然支持MySql分页查询，支持在SQL中写入{属性名}占位符
+    </p></div> <div class="feature"><h2>属性文件读取</h2> <p>
+      可以读取resource目录，本机目录，远程目录下的properties文件，可以遍历也可以根据key方便的找到value，如果key不存在会自动去环境变量里再找一次，也就是说它不仅会读取properties文件还会读取环境变量。
+    </p></div> <div class="feature"><h2>不止于此</h2> <p>
+      后面还会陆陆续续推出一些新的功能
+    </p></div></div> <h2 style="margin:0px;">更多项目</h2> <div class="features" style="border:0px;margin-top:0px;padding-top:0px;"><div class="feature"><h2>Magician-Scanning</h2> <p>
+      Magician-Scanning是一个用Java开发的扫描区块链的工具包，它可以根据开发者的需求来监控交易，它计划支持三个链，ETH（BSC、POLYGON等）、SOL和TRON。
+    </p></div> <div class="feature"><h2>Magician-ContractsTools</h2> <p>
+      Magician-ContractsTools是一个用于调用智能合约的工具包，你可以非常容易地在Java程序中调用智能合约进行查询和写入操作。
+    </p></div> <div class="feature"><h2>Magician-Http</h2> <p>基于Netty开发的一个 小型Http服务，支持http和WebSocket，可以采用注解来声明Handler</p></div> <div class="feature"><h2>Magician-Route</h2> <p>Magician-Route是由Magician-Web发展而来，主要是去掉了里面的反射，牺牲了一点易用性，将侧重点放在了性能上</p></div> <div class="feature"><h2>Magician-JDBC</h2> <p>一个数据库操作框架，支持多数据源，事务管理，分页查询，单表操作无SQL，复杂操作可以自己写SQL，支持实体参数，支持{}和?占位符</p></div> <div class="feature"><h2> </h2> <p> </p></div></div></div> <div class="footer">
+    基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@163.com
   </div></main></div><div class="global-ui"></div></div>
-    <script src="/assets/js/app.35fb4f71.js" defer></script><script src="/assets/js/2.67bc9379.js" defer></script><script src="/assets/js/7.559261fc.js" defer></script>
+    <script src="/assets/js/app.9cd974db.js" defer></script><script src="/assets/js/2.c4085713.js" defer></script><script src="/assets/js/7.7a991eeb.js" defer></script>
   </body>
 </html>
