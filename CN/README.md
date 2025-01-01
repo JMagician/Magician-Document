@@ -6,7 +6,7 @@ actionLink: /magic/index.md
 footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@163.com
 ---
 
-<h2 style="margin:0px;">求助信</h2>
+<!-- <h2 style="margin:0px;">求助信</h2>
 
 实在不好意思，在这个地方打扰大家了，我实在是没办法了，才用这种方式来向大家求助。作者最近遇到了一些困难，我也不买惨，不博同情，我就直接说了<br/>
 
@@ -21,9 +21,9 @@ footer: 基于MIT协议的开源项目 | QQ群：773291321 | Email - yuyemail@16
 我的目的只是为了把债务整合到一起，让自己能转起来，这笔钱到手我就会直接把现有的负债全部清掉。我真的不是为了玩乐，我也不是想白嫖，我们可以在线下见面，通过正规的公证处去签一份合约，而且公证处或者其他任何你可以信赖的机构都行，你甚至可以自己选择去哪签。<br/>
 
 如果有人愿意帮助我的话，我在此表示真心的感谢了，我的联系方式就是我的邮箱：yuyemail@163.com。如果到了可以约见面的那一步，我会把微信和电话发给你。
-
+-->
 <!-- <h1 style="width:100%;text-align:center;">更多项目</h1> -->
-<br/>
+<!-- <br/> -->
 
 <h2 style="margin:0px;">核心功能</h2>
 <div class="features" style="border:0px;margin-top:0px;padding-top:0px;">
